@@ -1,5 +1,6 @@
 package com.issuetracker.acceptance;
 
+import static com.issuetracker.acceptance.IssueSteps.마일스톤_목록_조회_요청;
 import static com.issuetracker.acceptance.IssueSteps.이슈_목록_조회_요청;
 import static com.issuetracker.acceptance.IssueSteps.이슈_작성_요청;
 import static com.issuetracker.util.fixture.LabelFixture.LABEL1;
@@ -23,6 +24,7 @@ import com.issuetracker.issue.ui.dto.IssueCreateRequest;
 import com.issuetracker.issue.ui.dto.IssueSearchRequest;
 import com.issuetracker.issue.ui.dto.IssueSearchResponse;
 import com.issuetracker.issue.ui.dto.IssuesSearchResponse;
+import com.issuetracker.issue.ui.dto.MilestonesSearchResponse;
 import com.issuetracker.util.AcceptanceTest;
 import com.issuetracker.util.fixture.LabelFixture;
 import com.issuetracker.util.fixture.MemberFixture;
@@ -173,6 +175,20 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 		응답_상태코드_검증(response, HttpStatus.NOT_FOUND);
 	}
 
+	/**
+	 * When 마일스톤 목록을 조회하면
+	 * Then 마일스톤 목록을 반환한다.
+	 */
+	@Test
+	void 마일스톤_목록을_조회한다() {
+		// when
+		var response = 마일스톤_목록_조회_요청();
+
+		// then
+		응답_상태코드_검증(response, HttpStatus.OK);
+		마일스톤_목록_검증(response);
+	}
+
 
 	private void 응답_상태코드_검증(ExtractableResponse<Response> response, HttpStatus httpStatus) {
 		assertThat(response.statusCode()).isEqualTo(httpStatus.value());
@@ -225,5 +241,12 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 		assertThat(lastIssueSearchResponse.getTitle()).isEqualTo(issueCreateRequest.getTitle());
 		assertThat(lastIssueSearchResponse.getIsOpen()).isTrue();
 		assertThat(lastIssueSearchResponse.getLabels().size()).isEqualTo(issueCreateRequest.getLabelIds().size());
+	}
+
+	private void 마일스톤_목록_검증(ExtractableResponse<Response> response) {
+		var findResponse = 마일스톤_목록_조회_요청();
+		MilestonesSearchResponse milestonesSearchResponse = findResponse.as(MilestonesSearchResponse.class);
+
+		assertThat(milestonesSearchResponse.getMilestones()).isNotEmpty();
 	}
 }
