@@ -37,4 +37,11 @@ public class IssueSteps {
 			.when().post("/api/issues")
 			.then().log().all().extract();
 	}
+
+	public static ExtractableResponse<Response> 작성자_목록_조회_요청() {
+		return RestAssured.given().log().all()
+			.accept(MediaType.APPLICATION_JSON_VALUE)
+			.when().get("/api/issues/authors")
+			.then().log().all().extract();
+	}
 }
