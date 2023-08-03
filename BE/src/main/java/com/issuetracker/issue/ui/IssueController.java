@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.issuetracker.issue.application.IssueService;
+import com.issuetracker.issue.ui.dto.AuthorsSearchResponse;
 import com.issuetracker.issue.ui.dto.IssueCreateRequest;
 import com.issuetracker.issue.ui.dto.IssueCreateResponse;
 import com.issuetracker.issue.ui.dto.IssueSearchRequest;
@@ -38,5 +39,10 @@ public class IssueController {
 		IssueCreateResponse issueCreateResponse = IssueCreateResponse.from(issueService.create(issueCreateRequest.toIssueCreateData(1L)));
 		return ResponseEntity.created(URI.create("/issues/" + issueCreateResponse.getId()))
 			.body(issueCreateResponse);
+	}
+
+	@GetMapping("/authors")
+	public ResponseEntity<AuthorsSearchResponse> showAuthors() {
+		return ResponseEntity.ok().body(AuthorsSearchResponse.from(issueService.searchAuthors()));
 	}
 }
