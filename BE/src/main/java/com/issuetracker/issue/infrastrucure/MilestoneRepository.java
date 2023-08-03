@@ -1,4 +1,4 @@
-package com.issuetracker.milestone.infrastructure;
+package com.issuetracker.issue.infrastrucure;
 
 import java.util.List;
 import java.util.Map;
@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.issuetracker.milestone.domain.Milestone;
+import com.issuetracker.issue.domain.Milestone;
 
 @Repository
 public class MilestoneRepository {

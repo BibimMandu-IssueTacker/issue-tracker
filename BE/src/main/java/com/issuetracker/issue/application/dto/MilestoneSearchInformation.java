@@ -1,9 +1,9 @@
-package com.issuetracker.milestone.application.dto;
+package com.issuetracker.issue.application.dto;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.issuetracker.milestone.domain.Milestone;
+import com.issuetracker.issue.domain.Milestone;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

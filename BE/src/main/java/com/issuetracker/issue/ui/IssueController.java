@@ -17,6 +17,7 @@ import com.issuetracker.issue.ui.dto.IssueCreateRequest;
 import com.issuetracker.issue.ui.dto.IssueCreateResponse;
 import com.issuetracker.issue.ui.dto.IssueSearchRequest;
 import com.issuetracker.issue.ui.dto.IssuesSearchResponse;
+import com.issuetracker.issue.ui.dto.MilestonesSearchResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +32,11 @@ public class IssueController {
 	public ResponseEntity<IssuesSearchResponse> showIssues(@ModelAttribute IssueSearchRequest issueSearchRequest) {
 		IssuesSearchResponse issuesSearchResponse = IssuesSearchResponse.from(issueService.search(issueSearchRequest.toIssueSearchData(1L)));
 		return ResponseEntity.ok().body(issuesSearchResponse);
+	}
+
+	@GetMapping("/milestones")
+	public ResponseEntity<MilestonesSearchResponse> showMilestonesForFilter() {
+		return ResponseEntity.ok().body(MilestonesSearchResponse.from(issueService.searchMilestonesForFilter()));
 	}
 
 	@PostMapping

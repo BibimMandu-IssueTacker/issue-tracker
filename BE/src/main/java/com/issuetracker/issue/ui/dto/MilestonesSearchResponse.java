@@ -1,8 +1,8 @@
-package com.issuetracker.milestone.ui.dto;
+package com.issuetracker.issue.ui.dto;
 
 import java.util.List;
 
-import com.issuetracker.milestone.application.dto.MilestoneSearchInformation;
+import com.issuetracker.issue.application.dto.MilestoneSearchInformation;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
