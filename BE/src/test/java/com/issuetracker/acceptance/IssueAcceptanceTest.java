@@ -1,9 +1,11 @@
 package com.issuetracker.acceptance;
 
+import static com.issuetracker.util.fixture.IssueFixture.ISSUE1;
 import static com.issuetracker.util.fixture.LabelFixture.LABEL1;
 import static com.issuetracker.util.fixture.LabelFixture.LABEL2;
 import static com.issuetracker.util.fixture.LabelFixture.LABEL4;
 import static com.issuetracker.util.fixture.LabelFixture.LABEL7;
+import static com.issuetracker.util.fixture.LabelFixture.findByIssueId;
 import static com.issuetracker.util.fixture.MemberFixture.MEMBER1;
 import static com.issuetracker.util.fixture.MemberFixture.MEMBER2;
 import static com.issuetracker.util.fixture.MemberFixture.MEMBER3;
@@ -13,6 +15,7 @@ import static com.issuetracker.util.fixture.MilestoneFixture.MILESTON2;
 import static com.issuetracker.util.fixture.MilestoneFixture.MILESTON4;
 import static com.issuetracker.util.steps.IssueSteps.마일스톤_목록_조회_요청;
 import static com.issuetracker.util.steps.IssueSteps.이슈_목록_조회_요청;
+import static com.issuetracker.util.steps.IssueSteps.이슈_상세_조회_요청;
 import static com.issuetracker.util.steps.IssueSteps.이슈_작성_요청;
 import static com.issuetracker.util.steps.IssueSteps.이슈에_등록_되어있는_담당자_목록_조회_요청;
 import static com.issuetracker.util.steps.IssueSteps.이슈에_등록_되어있는_라벨_목록_조회_요청;
@@ -25,19 +28,23 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.HttpStatus;
 
-import com.issuetracker.issue.ui.dto.AuthorsSearchResponse;
+import com.issuetracker.issue.ui.dto.AuthorResponses;
 import com.issuetracker.issue.ui.dto.IssueCreateRequest;
+import com.issuetracker.issue.ui.dto.IssueDetailResponse;
 import com.issuetracker.issue.ui.dto.IssueSearchRequest;
 import com.issuetracker.issue.ui.dto.IssueSearchResponse;
 import com.issuetracker.issue.ui.dto.IssuesSearchResponse;
 import com.issuetracker.milestone.ui.dto.MilestonesSearchResponse;
 import com.issuetracker.util.AcceptanceTest;
+import com.issuetracker.util.fixture.IssueCommentFixture;
+import com.issuetracker.util.fixture.IssueFixture;
 import com.issuetracker.util.fixture.LabelFixture;
 import com.issuetracker.util.fixture.MemberFixture;
 import com.issuetracker.util.fixture.MilestoneFixture;
@@ -104,11 +111,11 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 
 	/**
 	 * Given 회원, 마일스톤, 라벨을 생성하고 
-	 * When 이슈를 생성하면
+	 * When 이슈를 작성하면
 	 * Then 이슈 목록 조회 시 생성한 이슈를 확인 할 수 있다.
 	 */
 	@Test
-	void 이슈를_생성한다() {
+	void 이슈를_작성한다() {
 		// when
 		IssueCreateRequest issueCreateRequest = new IssueCreateRequest(
 			"제목",
@@ -210,7 +217,7 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 		마일스톤_목록_검증(response);
 	}
   
-  /**
+  	/**
 	 * When 작성자 목록을 조회하면
 	 * Then 작성자 목록을 반환한다.
 	 */
@@ -254,6 +261,51 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 		이슈에_등록_되어있는_라벨_목록_검증(response);
 	}
 
+	/**
+	 * Given 라벨, 마일스톤, 회원, 이슈를 생성하고
+	 * When 이슈 상세 조회하면
+	 * THen 이슈에 등록되어 있는 라벨, 마일스톤, 작성자를 조회할 수 있다.
+	 */
+	@Test
+	void 이슈_상세를_조회한다() {
+		// when
+		var response = 이슈_상세_조회_요청(ISSUE1.getId());
+
+		// then
+		응답_상태코드_검증(response, HttpStatus.OK);
+		이슈_상세_조회_검증(response, ISSUE1);
+	}
+
+	/**
+	 * When 존재하지 않는 이슈를 상세 조회하면
+	 * THen 요청이 실패된다.
+	 */
+	@Test
+	void 존재하지_않는_이슈를_상세_조회한다() {
+		// given
+		Long 존재하지_않는_이슈_아이디 = 20L;
+
+		// when
+		var response = 이슈_상세_조회_요청(존재하지_않는_이슈_아이디);
+
+		// then
+		응답_상태코드_검증(response, HttpStatus.NOT_FOUND);
+	}
+
+	private void 이슈_상세_조회_검증(ExtractableResponse<Response> response, IssueFixture issue) {
+		IssueDetailResponse issueDetailResponse = response.as(IssueDetailResponse.class);
+
+		Assertions.assertAll(
+			() -> assertThat(issueDetailResponse.getTitle()).isEqualTo(issue.getTitle()),
+			() -> assertThat(issueDetailResponse.getContent()).isEqualTo(issue.getContent()),
+			() -> assertThat(issueDetailResponse.getAuthor().getId()).isEqualTo(issue.getAuthorId()),
+			() -> assertThat(issueDetailResponse.getMilestone().getId()).isEqualTo(issue.getMilestoneId()),
+			() -> assertThat(issueDetailResponse.getLabels()).hasSize(LabelFixture.findByIssueId(issue.getId()).size()),
+			() -> assertThat(issueDetailResponse.getAssignees()).hasSize(MemberFixture.findByIssueId(issue.getId()).size()),
+			() -> assertThat(issueDetailResponse.getComments()).hasSize(IssueCommentFixture.findByIssueId(issue.getId()).size())
+		);
+	}
+
 	private static Stream<Arguments> providerIssueSearchRequest() {
 		return Stream.of(
 			Arguments.of(
@@ -286,20 +338,18 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 		);
 	}
 
-	private void 응답_상태코드_검증(ExtractableResponse<Response> response, HttpStatus httpStatus) {
-		assertThat(response.statusCode()).isEqualTo(httpStatus.value());
-	}
-
 	private void 검색_조건에_맞는_이슈_목록_검증(ExtractableResponse<Response> response, IssueSearchRequest issueSearchRequest) {
 		int issueOpenCount = response.jsonPath().getInt("metadata.issueOpenCount");
 		int issueCloseCount = response.jsonPath().getInt("metadata.issueCloseCount");
 		int labelCount = response.jsonPath().getInt("metadata.labelCount");
 		int milestoneCount = response.jsonPath().getInt("metadata.milestoneCount");
 
-		assertThat(issueOpenCount).isEqualTo(6);
-		assertThat(issueCloseCount).isEqualTo(6);
-		assertThat(labelCount).isEqualTo(7);
-		assertThat(milestoneCount).isEqualTo(4);
+		Assertions.assertAll(
+			() -> assertThat(issueOpenCount).isEqualTo(6),
+			() -> assertThat(issueCloseCount).isEqualTo(6),
+			() -> assertThat(labelCount).isEqualTo(7),
+			() -> assertThat(milestoneCount).isEqualTo(4)
+		);
 
 		if (issueSearchRequest.getIsOpen() != null) {
 			List<Boolean> isOpens = response.jsonPath().getList("issues.isOpen", Boolean.class);
@@ -358,9 +408,9 @@ public class IssueAcceptanceTest extends AcceptanceTest {
   
 	private void 작성자_목록_검증(ExtractableResponse<Response> response) {
 		var findResponse = 작성자_목록_조회_요청();
-		AuthorsSearchResponse authorsSearchResponse = findResponse.as(AuthorsSearchResponse.class);
+		AuthorResponses authorResponses = findResponse.as(AuthorResponses.class);
 
-		assertThat(authorsSearchResponse.getAuthors()).isNotEmpty();
+		assertThat(authorResponses.getAuthors()).isNotEmpty();
   }
   
 	private void 이슈에_등록_되어있는_담당자_목록_검증(ExtractableResponse<Response> response) {

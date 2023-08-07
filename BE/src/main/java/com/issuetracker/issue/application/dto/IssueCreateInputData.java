@@ -8,8 +8,10 @@ import com.issuetracker.issue.domain.AssignedLabel;
 import com.issuetracker.issue.domain.Assignee;
 import com.issuetracker.issue.domain.Issue;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@AllArgsConstructor
 @Getter
 public class IssueCreateInputData {
 
@@ -19,16 +21,6 @@ public class IssueCreateInputData {
 	private List<Long> labelIds;
 	private Long milestoneId;
 	private Long authorId;
-
-	public IssueCreateInputData(String title, String content, List<Long> assigneeIds, List<Long> labelIds,
-		Long milestoneId, Long authorId) {
-		this.title = title;
-		this.content = content;
-		this.assigneeIds = assigneeIds;
-		this.labelIds = labelIds;
-		this.milestoneId = milestoneId;
-		this.authorId = authorId;
-	}
 
 	public Issue toIssue(LocalDateTime now) {
 		return Issue.builder()

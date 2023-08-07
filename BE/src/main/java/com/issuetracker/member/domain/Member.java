@@ -23,10 +23,4 @@ public class Member {
 		this.nickname = nickname;
 		this.profileImageUrl = profileImageUrl;
 	}
-
-	public static Member createInstanceById(Long id) {
-		return Member.builder()
-			.id(id)
-			.build();
-	}
 }

@@ -1,6 +1,7 @@
 package com.issuetracker.util.fixture;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public enum MemberFixture {
@@ -49,6 +50,13 @@ public enum MemberFixture {
 			.filter(m -> m.id == id)
 			.findAny()
 			.orElseThrow();
+	}
+
+	public static List<MemberFixture> findByIssueId(Long issueId) {
+		return Arrays.stream(AssigneeFixture.values())
+			.filter(a -> a.getIssueId() == issueId)
+			.map(a -> findById(a.getMemberId()))
+			.collect(Collectors.toUnmodifiableList());
 	}
 
 	public static String createInsertSQL() {

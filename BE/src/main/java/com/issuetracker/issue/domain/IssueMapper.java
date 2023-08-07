@@ -8,4 +8,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface IssueMapper {
 
 	List<IssueRead> search(IssueSearch issueSearch);
+
+	IssueDetailRead findById(Long id);
 }

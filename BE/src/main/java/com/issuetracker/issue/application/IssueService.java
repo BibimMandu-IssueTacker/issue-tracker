@@ -6,18 +6,20 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.issuetracker.issue.application.dto.IssueAssigneeInformation;
 import com.issuetracker.issue.application.dto.IssueCreateInformation;
 import com.issuetracker.issue.application.dto.IssueCreateInputData;
-import com.issuetracker.issue.application.dto.IssueLabelMappingInformation;
+import com.issuetracker.issue.application.dto.IssueDetailInformation;
 import com.issuetracker.issue.application.dto.IssueSearchInformation;
 import com.issuetracker.issue.application.dto.IssueSearchInputData;
 import com.issuetracker.issue.application.dto.IssuesCountInformation;
 import com.issuetracker.issue.domain.AssignedLabelRepository;
 import com.issuetracker.issue.domain.AssigneeRepository;
 import com.issuetracker.issue.domain.Issue;
+import com.issuetracker.issue.domain.IssueDetailRead;
 import com.issuetracker.issue.domain.IssueMapper;
 import com.issuetracker.issue.domain.IssueRepository;
+import com.issuetracker.label.application.dto.LabelInformation;
+import com.issuetracker.member.application.dto.MemberInformation;
 
 import lombok.RequiredArgsConstructor;
 
@@ -51,11 +53,17 @@ public class IssueService {
 		return IssueSearchInformation.from(issueMapper.search(issueSearchInputData.toIssueSearch()));
 	}
 
-	public List<IssueAssigneeInformation> searchAssignee() {
-		return IssueAssigneeInformation.from(assigneeRepository.findAll());
+	public List<MemberInformation> searchAssignee() {
+		return MemberInformation.from(assigneeRepository.findAll());
 	}
 
-	public List<IssueLabelMappingInformation> searchAssignedLabel() {
-		return IssueLabelMappingInformation.from(assignedLabelRepository.findAll());
+	public List<LabelInformation> searchAssignedLabel() {
+		return LabelInformation.from(assignedLabelRepository.findAll());
+	}
+
+	public IssueDetailInformation findById(Long id) {
+		IssueDetailRead issueDetailRead = issueMapper.findById(id);
+		issueValidator.verifyIssueDetail(issueDetailRead);
+		return IssueDetailInformation.from(issueDetailRead);
 	}
 }

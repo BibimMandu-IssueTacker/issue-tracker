@@ -1,8 +1,13 @@
 package com.issuetracker.issue.application;
 
+import java.util.Objects;
+
 import org.springframework.stereotype.Component;
 
+import com.issuetracker.config.exception.CustomHttpException;
+import com.issuetracker.config.exception.ErrorType;
 import com.issuetracker.issue.application.dto.IssueCreateInputData;
+import com.issuetracker.issue.domain.IssueDetailRead;
 import com.issuetracker.label.application.LabelValidator;
 import com.issuetracker.member.application.MemberValidator;
 import com.issuetracker.milestone.application.MilestoneValidator;
@@ -22,5 +27,11 @@ public class IssueValidator {
 		memberValidator.verifyMember(issueCreateInputData.getAuthorId());
 		memberValidator.verifyMembers(issueCreateInputData.getAssigneeIds());
 		labelValidator.verifyLabels(issueCreateInputData.getLabelIds());
+	}
+
+	public void verifyIssueDetail(IssueDetailRead issueDetailRead) {
+		if (Objects.isNull(issueDetailRead)) {
+			throw new CustomHttpException(ErrorType.ISSUE_NOT_FOUND);
+		}
 	}
 }
