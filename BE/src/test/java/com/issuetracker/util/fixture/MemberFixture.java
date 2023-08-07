@@ -5,10 +5,10 @@ import java.util.stream.Collectors;
 
 public enum MemberFixture {
 
-	USER1(1L, "user01@gmail.com", "1234", "유저1", "https://i.imgur.com/wCl8osd.png"),
-	USER2(2L, "user02@gmail.com", "1234", "유저2", "https://i.imgur.com/wCl8osd.png"),
-	USER3(3L, "user03@gmail.com", "1234", "유저3", "https://i.imgur.com/wCl8osd.png"),
-	USER4(4L, "user04@gmail.com", "1234", "유저4", "https://i.imgur.com/wCl8osd.png");
+	MEMBER1(1L, "user01@gmail.com", "1234", "유저1", "https://i.imgur.com/wCl8osd.png"),
+	MEMBER2(2L, "user02@gmail.com", "1234", "유저2", "https://i.imgur.com/wCl8osd.png"),
+	MEMBER3(3L, "user03@gmail.com", "1234", "유저3", "https://i.imgur.com/wCl8osd.png"),
+	MEMBER4(4L, "user04@gmail.com", "1234", "유저4", "https://i.imgur.com/wCl8osd.png");
 
 	private final Long id;
 	private final String email;

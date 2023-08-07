@@ -20,7 +20,7 @@ public class IssueAssigneeInformation {
 		return new IssueAssigneeInformation(
 			assignee.getId(),
 			assignee.getNickname(),
-			assignee.getProFileImageUrl()
+			assignee.getProfileImageUrl()
 		);
 	}
 

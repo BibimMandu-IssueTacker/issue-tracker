@@ -4,13 +4,13 @@ import static com.issuetracker.util.fixture.LabelFixture.LABEL1;
 import static com.issuetracker.util.fixture.LabelFixture.LABEL2;
 import static com.issuetracker.util.fixture.LabelFixture.LABEL4;
 import static com.issuetracker.util.fixture.LabelFixture.LABEL7;
-import static com.issuetracker.util.fixture.MemberFixture.USER1;
-import static com.issuetracker.util.fixture.MemberFixture.USER2;
-import static com.issuetracker.util.fixture.MemberFixture.USER3;
-import static com.issuetracker.util.fixture.MemberFixture.USER4;
-import static com.issuetracker.util.fixture.MilestoneFixture.MILESTONR1;
-import static com.issuetracker.util.fixture.MilestoneFixture.MILESTONR2;
-import static com.issuetracker.util.fixture.MilestoneFixture.MILESTONR4;
+import static com.issuetracker.util.fixture.MemberFixture.MEMBER1;
+import static com.issuetracker.util.fixture.MemberFixture.MEMBER2;
+import static com.issuetracker.util.fixture.MemberFixture.MEMBER3;
+import static com.issuetracker.util.fixture.MemberFixture.MEMBER4;
+import static com.issuetracker.util.fixture.MilestoneFixture.MILESTON1;
+import static com.issuetracker.util.fixture.MilestoneFixture.MILESTON2;
+import static com.issuetracker.util.fixture.MilestoneFixture.MILESTON4;
 import static com.issuetracker.util.steps.IssueSteps.마일스톤_목록_조회_요청;
 import static com.issuetracker.util.steps.IssueSteps.이슈_목록_조회_요청;
 import static com.issuetracker.util.steps.IssueSteps.이슈_작성_요청;
@@ -73,10 +73,10 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 		// when
 		var issueSearchRequest = new IssueSearchRequest(
 			false,
-			List.of(USER4.getId()),
+			List.of(MEMBER4.getId()),
 			List.of(LABEL1.getId(), LABEL2.getId()),
-			MILESTONR4.getId(),
-			USER1.getId(),
+			MILESTON4.getId(),
+			MEMBER1.getId(),
 			true
 		);
 		var response = 이슈_목록_조회_요청(issueSearchRequest);
@@ -113,9 +113,9 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 		IssueCreateRequest issueCreateRequest = new IssueCreateRequest(
 			"제목",
 			"내용",
-			List.of(USER1.getId()),
+			List.of(MEMBER1.getId()),
 			List.of(LABEL1.getId()),
-			MILESTONR1.getId()
+			MILESTON1.getId()
 		);
 		var response = 이슈_작성_요청(issueCreateRequest);
 
@@ -138,7 +138,7 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 		IssueCreateRequest issueCreateRequest = new IssueCreateRequest(
 			"제목",
 			"내용",
-			List.of(USER1.getId()),
+			List.of(MEMBER1.getId()),
 			List.of(LABEL1.getId()),
 			존재하지_않는_마일스톤_아이디
 		);
@@ -164,7 +164,7 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 			"내용",
 			List.of(존재하지_않는_담당자_아이디),
 			List.of(LABEL1.getId()),
-			MILESTONR1.getId()
+			MILESTON1.getId()
 		);
 		var response = 이슈_작성_요청(issueCreateRequest);
 
@@ -186,9 +186,9 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 		IssueCreateRequest issueCreateRequest = new IssueCreateRequest(
 			"제목",
 			"내용",
-			List.of(USER1.getId()),
+			List.of(MEMBER1.getId()),
 			List.of(존재하지_않는_라벨_아이디),
-			MILESTONR1.getId()
+			MILESTON1.getId()
 		);
 		var response = 이슈_작성_요청(issueCreateRequest);
 
@@ -259,10 +259,10 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 			Arguments.of(
 				new IssueSearchRequest(
 					true,
-					List.of(USER2.getId(), USER3.getId()),
+					List.of(MEMBER2.getId(), MEMBER3.getId()),
 					List.of(LABEL4.getId(), LABEL7.getId()),
-					MILESTONR2.getId(),
-					USER4.getId(),
+					MILESTON2.getId(),
+					MEMBER4.getId(),
 					null)
 			),
 			Arguments.of(
@@ -270,8 +270,8 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 					true,
 					null,
 					List.of(LABEL4.getId(), LABEL7.getId()),
-					MILESTONR1.getId(),
-					USER2.getId(),
+					MILESTON1.getId(),
+					MEMBER2.getId(),
 					true)
 			),
 			Arguments.of(
@@ -279,8 +279,8 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 					null,
 					null,
 					null,
-					MILESTONR1.getId(),
-					USER2.getId(),
+					MILESTON1.getId(),
+					MEMBER2.getId(),
 					true)
 			)
 		);
