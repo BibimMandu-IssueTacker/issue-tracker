@@ -8,6 +8,7 @@ import com.issuetracker.config.exception.CustomHttpException;
 import com.issuetracker.config.exception.ErrorType;
 import com.issuetracker.issue.application.dto.IssueCreateInputData;
 import com.issuetracker.issue.domain.IssueDetailRead;
+import com.issuetracker.issue.domain.IssueRepository;
 import com.issuetracker.label.application.LabelValidator;
 import com.issuetracker.member.application.MemberValidator;
 import com.issuetracker.milestone.application.MilestoneValidator;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class IssueValidator {
 
+	private final IssueRepository issueRepository;
 	private final MilestoneValidator milestoneValidator;
 	private final MemberValidator memberValidator;
 	private final LabelValidator labelValidator;
@@ -33,5 +35,31 @@ public class IssueValidator {
 		if (Objects.isNull(issueDetailRead)) {
 			throw new CustomHttpException(ErrorType.ISSUE_NOT_FOUND);
 		}
+	}
+
+	public void verifyUpdatedOrDeletedCount(int count) {
+		if (count != 1) {
+			throw new CustomHttpException(ErrorType.ISSUE_NOT_FOUND);
+		}
+	}
+
+	public void verifyCommentUpdatedOrDeletedCount(int count) {
+		if (count != 1) {
+			throw new CustomHttpException(ErrorType.ISSUE_COMMENT_NOT_FOUND);
+		}
+	}
+
+	public void verifyNonNullUpdateData(Object object) {
+		if (Objects.isNull(object)) {
+			throw new CustomHttpException(ErrorType.ISSUE_UPDATE_NULL);
+		}
+	}
+
+	public void verifyCreateIssueComment(Long id, Long authorId) {
+		if (Objects.nonNull(id) && !issueRepository.existById(id)) {
+			throw new CustomHttpException(ErrorType.ISSUE_NOT_FOUND);
+		}
+
+		memberValidator.verifyMember(authorId);
 	}
 }
