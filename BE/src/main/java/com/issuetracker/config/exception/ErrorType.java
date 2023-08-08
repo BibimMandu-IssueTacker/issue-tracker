@@ -14,7 +14,9 @@ public enum ErrorType {
 	MILESTONE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 마일스톤이 존재하지 않습니다."),
 	ISSUE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 이슈가 존재하지 않습니다."),
 
-	QUERY_STRING_KEY_NOT_MATCH(HttpStatus.BAD_REQUEST, "올바른 QueryString Key가 아닙니다.");
+	QUERY_STRING_KEY_NOT_MATCH(HttpStatus.BAD_REQUEST, "올바른 QueryString Key가 아닙니다."),
+
+	ILLEGAL_ID(HttpStatus.BAD_REQUEST, "유효한 id값이 아닙니다.");
 
 	private final HttpStatus status;
 	private final String message;

@@ -9,4 +9,6 @@ public interface LabelRepository {
 	Long save(Label label);
 
 	int update(Label label);
+
+	int delete(Label label);
 }
