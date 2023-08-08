@@ -5,7 +5,9 @@ import java.net.URI;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,13 +15,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.issuetracker.issue.application.IssueService;
-import com.issuetracker.issue.ui.dto.AuthorResponses;
+import com.issuetracker.issue.application.dto.IssueCommentCreateData;
+import com.issuetracker.issue.domain.IssueComment;
+import com.issuetracker.issue.ui.dto.AssignedLabelResponses;
 import com.issuetracker.issue.ui.dto.AssigneesResponses;
+import com.issuetracker.issue.ui.dto.AuthorResponses;
+import com.issuetracker.issue.ui.dto.IssueCommentCreateRequest;
+import com.issuetracker.issue.ui.dto.IssueCommentCreateResponse;
+import com.issuetracker.issue.ui.dto.IssueCommentResponse;
+import com.issuetracker.issue.ui.dto.IssueCommentUpdateRequest;
 import com.issuetracker.issue.ui.dto.IssueCreateRequest;
 import com.issuetracker.issue.ui.dto.IssueCreateResponse;
-import com.issuetracker.issue.ui.dto.AssignedLabelResponses;
 import com.issuetracker.issue.ui.dto.IssueDetailResponse;
 import com.issuetracker.issue.ui.dto.IssueSearchRequest;
+import com.issuetracker.issue.ui.dto.IssueUpdateRequest;
 import com.issuetracker.issue.ui.dto.IssuesSearchResponse;
 import com.issuetracker.member.application.MemberService;
 import com.issuetracker.milestone.application.MilestoneService;
@@ -78,5 +87,44 @@ public class IssueController {
 	public ResponseEntity<IssueDetailResponse> showIssueDetail(@PathVariable Long id) {
 		IssueDetailResponse issueDetailResponse = IssueDetailResponse.from(issueService.findById(id));
 		return ResponseEntity.ok().body(issueDetailResponse);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deleteIssue(@PathVariable Long id) {
+		issueService.deleteIssue(id);
+		return ResponseEntity.noContent().build();
+	}
+
+	@PatchMapping("/{id}/open")
+	public ResponseEntity<Void> updateIssueOpen(@PathVariable Long id, @RequestBody IssueUpdateRequest issueUpdateRequest) {
+		issueService.updateIssueOpen(issueUpdateRequest.toIssueUpdateDataOpen(id));
+		return ResponseEntity.noContent().build();
+	}
+
+	@PatchMapping("/{id}/title")
+	public ResponseEntity<Void> updateIssueTitle(@PathVariable Long id, @RequestBody @Valid IssueUpdateRequest issueUpdateRequest) {
+		issueService.updateIssueTitle(issueUpdateRequest.toIssueUpdateDataTitle(id));
+		return ResponseEntity.noContent().build();
+	}
+
+	@PatchMapping("/{id}/content")
+	public ResponseEntity<Void> updateIssueContent(@PathVariable Long id, @RequestBody @Valid IssueUpdateRequest issueUpdateRequest) {
+		issueService.updateIssueContent(issueUpdateRequest.toIssueUpdateDataContent(id));
+		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping("/{id}/comments")
+	public ResponseEntity<IssueCommentCreateResponse> createIssueComment(@PathVariable Long id, @RequestBody @Valid
+		IssueCommentCreateRequest issueCommentCreateRequest) {
+		IssueCommentCreateData issueCommentCreateData = issueCommentCreateRequest.toIssueCommentCreateData(id, 1L);
+		IssueCommentCreateResponse issueCommentCreateResponse = IssueCommentCreateResponse.from(issueService.createIssueComment(issueCommentCreateData));
+		return ResponseEntity.created(URI.create("/"+ id)).body(issueCommentCreateResponse);
+	}
+
+	@PatchMapping("/{id}/comments/{comment-id}")
+	public ResponseEntity<Void> updateIssueCommentContent(@PathVariable Long id, @PathVariable("comment-id") Long commentId,
+		@RequestBody @Valid IssueCommentUpdateRequest issueCommentUpdateRequest) {
+		issueService.updateIssueCommentContent(issueCommentUpdateRequest.toIssueCommentUpdateData(id, commentId));
+		return ResponseEntity.noContent().build();
 	}
 }
