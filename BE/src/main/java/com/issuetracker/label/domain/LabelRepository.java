@@ -11,4 +11,6 @@ public interface LabelRepository {
 	int update(Label label);
 
 	int delete(Label label);
+
+	List<Label> findAll();
 }
