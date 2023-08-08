@@ -79,4 +79,10 @@ public class IssueService {
 		int updatedCount = issueRepository.updateTitle(issueUpdateData.getId(), issueUpdateData.getTitle());
 		issueValidator.verifyUpdateIssue(updatedCount);
 	}
+
+	@Transactional
+	public void updateContent(IssueUpdateData issueUpdateData) {
+		int updatedCount = issueRepository.updateContent(issueUpdateData.getId(), issueUpdateData.getContent());
+		issueValidator.verifyUpdateIssue(updatedCount);
+	}
 }

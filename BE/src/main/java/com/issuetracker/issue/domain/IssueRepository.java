@@ -9,4 +9,6 @@ public interface IssueRepository {
 	int updateOpen(long id, boolean isOpe);
 
 	int updateTitle(long id, String title);
+
+	int updateContent(long id, String content);
 }

@@ -25,6 +25,7 @@ public class JdbcIssueRepository implements IssueRepository {
 	private static final String FIND_ALL_COUNT_SQL = "SELECT SUM(CASE WHEN is_open = 0 THEN 1 ELSE 0 END) AS issue_close_count, SUM(CASE WHEN is_open = 1 THEN 1 ELSE 0 END) AS issue_open_count, (SELECT COUNT(id) FROM label) AS label_count, (SELECT COUNT(id) FROM milestone) AS milestone_count FROM issue";
 	private static final String UPDATE_IS_OPEN_SQL = "UPDATE issue SET is_open = :isOpen WHERE id = :id";
 	private static final String UPDATE_TITLE_SQL = "UPDATE issue SET title = :title WHERE id = :id";
+	private static final String UPDATE_CONTENT_SQL = "UPDATE issue SET content = :content WHERE id = :id";
 
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -61,22 +62,19 @@ public class JdbcIssueRepository implements IssueRepository {
 		return jdbcTemplate.update(UPDATE_TITLE_SQL, param);
 	}
 
+	@Override
+	public int updateContent(long id, String content) {
+		SqlParameterSource param = new MapSqlParameterSource()
+			.addValue("id", id)
+			.addValue("content", content);
+		return jdbcTemplate.update(UPDATE_CONTENT_SQL, param);
+	}
+
 	private static final RowMapper<IssuesCountData> ISSUE_MAIN_PAGE_COUNT_ROW_MAPPER = (rs, rowNum) ->
 		IssuesCountData.builder()
 			.issueOpenCount(rs.getInt("issue_open_count"))
 			.issueCloseCount(rs.getInt("issue_close_count"))
 			.labelCount(rs.getInt("label_count"))
 			.milestoneCount(rs.getInt("milestone_count"))
-			.build();
-
-	private static final RowMapper<Issue> ISSUE_ROW_MAPPER = (rs, rowNum) ->
-		Issue.builder()
-			.id(rs.getLong("id"))
-			.title(rs.getString("title"))
-			.content(rs.getString("content"))
-			.isOpen(rs.getBoolean("is_open"))
-			.createAt(rs.getTimestamp("create_at").toLocalDateTime())
-			.milestoneId(rs.getLong("milestone_id"))
-			.authorId(rs.getLong("author_id"))
 			.build();
 }

@@ -80,9 +80,18 @@ class IssueRepositoryTest {
 	}
 
 	@Test
-	void 이슈_타이틀을_수정한다() {
+	void 이슈_제목을_수정한다() {
 		// when
 		int actual = issueRepository.updateTitle(ISSUE1.getId(), "수정한 제목");
+
+		// then
+		assertThat(actual).isEqualTo(1);
+	}
+
+	@Test
+	void 이슈_내용을_수정한다() {
+		// when
+		int actual = issueRepository.updateContent(ISSUE1.getId(), "## 수정한 내용");
 
 		// then
 		assertThat(actual).isEqualTo(1);
