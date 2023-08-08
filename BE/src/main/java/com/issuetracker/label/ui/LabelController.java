@@ -62,5 +62,4 @@ public class LabelController {
 		return ResponseEntity.ok()
 			.body(LabelsResponse.from(labelService.search()));
 	}
-
 }
