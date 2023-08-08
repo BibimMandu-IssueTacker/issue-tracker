@@ -16,7 +16,8 @@ public enum ErrorType {
 
 	QUERY_STRING_KEY_NOT_MATCH(HttpStatus.BAD_REQUEST, "올바른 QueryString Key가 아닙니다."),
 
-	ILLEGAL_ID(HttpStatus.BAD_REQUEST, "유효한 id값이 아닙니다.");
+	ILLEGAL_ID(HttpStatus.BAD_REQUEST, "유효한 id값이 아닙니다."),
+	ILLEGAL_BOOLEAN_VALUE(HttpStatus.BAD_REQUEST, "유효한 boolean값이 아닙니다.");
 
 	private final HttpStatus status;
 	private final String message;
