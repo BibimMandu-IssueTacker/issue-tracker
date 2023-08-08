@@ -347,9 +347,9 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 	@ParameterizedTest
 	@NullSource
 	@MethodSource("providerUpdateContent")
-	void 이슈_내용_수정_시_3000글자_초과하면_요청이_실패된다(String title) {
+	void 이슈_내용_수정_시_3000글자_초과하면_요청이_실패된다(String content) {
 		// when
-		var response = 이슈_제목_수정_요청(ISSUE1.getId(), title);
+		var response = 이슈_내용_수정_요청(ISSUE1.getId(), content);
 
 		// when
 		응답_상태코드_검증(response, HttpStatus.BAD_REQUEST);

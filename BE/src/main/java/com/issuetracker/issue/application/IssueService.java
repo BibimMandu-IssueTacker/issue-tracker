@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.issuetracker.issue.application.dto.IssueCommentCreateData;
 import com.issuetracker.issue.application.dto.IssueCommentCreateInformation;
+import com.issuetracker.issue.application.dto.IssueCommentUpdateData;
 import com.issuetracker.issue.application.dto.IssueCreateInformation;
 import com.issuetracker.issue.application.dto.IssueCreateInputData;
 import com.issuetracker.issue.application.dto.IssueDetailInformation;
@@ -103,5 +104,12 @@ public class IssueService {
 		issueValidator.verifyCreateIssueComment(issueCommentCreateData.getIssueId(), issueCommentCreateData.getAuthorId());
 		Long savedId = issueCommentRepository.save(issueCommentCreateData.toIssueComment(LocalDateTime.now()));
 		return IssueCommentCreateInformation.from(savedId);
+	}
+
+	@Transactional
+	public void updateIssueCommentContent(IssueCommentUpdateData issueCommentUpdateData) {
+		issueValidator.verifyNonNullUpdateData(issueCommentUpdateData.getContent());
+		int updatedCount = issueCommentRepository.updateContent(issueCommentUpdateData.getIssueCommentId(), issueCommentUpdateData.getContent());
+		issueValidator.verifyCommentUpdatedOrDeletedCount(updatedCount);
 	}
 }

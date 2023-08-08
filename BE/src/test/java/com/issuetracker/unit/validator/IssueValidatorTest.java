@@ -104,7 +104,7 @@ public class IssueValidatorTest {
 	@Test
 	void 댓글_작성_시_이슈와_작성자가_존재하는지_검증한다() {
 		// given
-		given(issueRepository.existById(any())).willReturn(true);
+		given(issueRepository.existById(anyLong())).willReturn(true);
 		willDoNothing().given(memberValidator).verifyMember(any());
 
 		// then

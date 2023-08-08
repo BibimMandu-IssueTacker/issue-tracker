@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.issuetracker.issue.application.IssueService;
 import com.issuetracker.issue.application.dto.IssueCommentCreateData;
+import com.issuetracker.issue.domain.IssueComment;
 import com.issuetracker.issue.ui.dto.AssignedLabelResponses;
 import com.issuetracker.issue.ui.dto.AssigneesResponses;
 import com.issuetracker.issue.ui.dto.AuthorResponses;
 import com.issuetracker.issue.ui.dto.IssueCommentCreateRequest;
 import com.issuetracker.issue.ui.dto.IssueCommentCreateResponse;
 import com.issuetracker.issue.ui.dto.IssueCommentResponse;
+import com.issuetracker.issue.ui.dto.IssueCommentUpdateRequest;
 import com.issuetracker.issue.ui.dto.IssueCreateRequest;
 import com.issuetracker.issue.ui.dto.IssueCreateResponse;
 import com.issuetracker.issue.ui.dto.IssueDetailResponse;
@@ -117,5 +119,12 @@ public class IssueController {
 		IssueCommentCreateData issueCommentCreateData = issueCommentCreateRequest.toIssueCommentCreateData(id, 1L);
 		IssueCommentCreateResponse issueCommentCreateResponse = IssueCommentCreateResponse.from(issueService.createIssueComment(issueCommentCreateData));
 		return ResponseEntity.created(URI.create("/"+ id)).body(issueCommentCreateResponse);
+	}
+
+	@PatchMapping("/{id}/comments/{comment-id}")
+	public ResponseEntity<Void> updateIssueCommentContent(@PathVariable Long id, @PathVariable("comment-id") Long commentId,
+		@RequestBody @Valid IssueCommentUpdateRequest issueCommentUpdateRequest) {
+		issueService.updateIssueCommentContent(issueCommentUpdateRequest.toIssueCommentUpdateData(id, commentId));
+		return ResponseEntity.noContent().build();
 	}
 }

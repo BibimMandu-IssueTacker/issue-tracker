@@ -126,5 +126,12 @@ public class IssueSteps {
 			.then().log().all().extract();
 	}
 
-
+	public static ExtractableResponse<Response> 이슈_댓글_내용_수정_요청(Long id, Long issueCommentId, String content) {
+		return RestAssured.given().log().all()
+			.body(new IssueCommentCreateRequest(content))
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.accept(MediaType.APPLICATION_JSON_VALUE)
+			.when().patch("/api/issues/{id}/comments/{comment-id}", id, issueCommentId)
+			.then().log().all().extract();
+	}
 }

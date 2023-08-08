@@ -43,6 +43,12 @@ public class IssueValidator {
 		}
 	}
 
+	public void verifyCommentUpdatedOrDeletedCount(int count) {
+		if (count != 1) {
+			throw new CustomHttpException(ErrorType.ISSUE_COMMENT_NOT_FOUND);
+		}
+	}
+
 	public void verifyNonNullUpdateData(Object object) {
 		if (Objects.isNull(object)) {
 			throw new CustomHttpException(ErrorType.ISSUE_UPDATE_NULL);
