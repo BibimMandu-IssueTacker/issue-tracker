@@ -11,4 +11,5 @@ public interface LabelRepository {
 	int update(Label label);
 
 	int delete(Label label);
+
 }

@@ -65,5 +65,4 @@ public class JdbcLabelRepository implements LabelRepository {
 
 		return jdbcTemplate.update(DELETE_SQL, param);
 	}
-
 }
