@@ -31,12 +31,19 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.validation.Valid;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 
 import com.issuetracker.issue.ui.dto.AuthorResponses;
 import com.issuetracker.issue.ui.dto.IssueCreateRequest;
@@ -342,6 +349,22 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 	}
 
 	/**
+	 * Given 라벨, 마일스톤, 회원, 이슈를 생성하고
+	 * When 이슈 제목을 수정 시 공백 이거나 100글자 초과하면
+	 * Then 요청이 실패된다.
+	 */
+	@ParameterizedTest
+	@NullAndEmptySource
+	@MethodSource("providerUpdateTitle")
+	void 이슈_제목_수정_시_공백_이거나_100글자_초과하면_요청이_실패된다(String title) {
+		// when
+		var response = 이슈_제목_수정_요청(ISSUE1.getId(), title);
+
+		// when
+		응답_상태코드_검증(response, HttpStatus.BAD_REQUEST);
+	}
+
+	/**
 	 * When 존재하지 않는 이슈로 제목을 수정하면
 	 * Then 요청이 실패된다.
 	 */
@@ -362,14 +385,32 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 	 * When 이슈 내용을 수정하면
 	 * Then 이슈 상세 조회에서 수정된 값을 확인할 수 있다.
 	 */
-	@Test
-	void 이슈_내용을_수정한다() {
+	@ParameterizedTest
+	@EmptySource
+	@ValueSource(strings = "## 수정한 내용")
+	void 이슈_내용을_수정한다(String content) {
 		// when
-		var response = 이슈_내용_수정_요청(ISSUE1.getId(), "## 수정한 내용");
+		var response = 이슈_내용_수정_요청(ISSUE1.getId(), content);
 
 		// then
 		응답_상태코드_검증(response, HttpStatus.NO_CONTENT);
-		이슈_상세_조회에서_수정한_값_검증(ISSUE1.getId(), "content", "## 수정한 내용");
+		이슈_상세_조회에서_수정한_값_검증(ISSUE1.getId(), "content", content);
+	}
+
+	/**
+	 * Given 라벨, 마일스톤, 회원, 이슈를 생성하고
+	 * When 이슈 내용을 수정 시 3000글자 초과하면
+	 * Then 요청이 실패된다.
+	 */
+	@ParameterizedTest
+	@NullSource
+	@MethodSource("providerUpdateContent")
+	void 이슈_내용_수정_시_3000글자_초과하면_요청이_실패된다(String title) {
+		// when
+		var response = 이슈_제목_수정_요청(ISSUE1.getId(), title);
+
+		// when
+		응답_상태코드_검증(response, HttpStatus.BAD_REQUEST);
 	}
 
 	/**
@@ -431,6 +472,22 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 					MILESTON1.getId(),
 					MEMBER2.getId(),
 					true)
+			)
+		);
+	}
+
+	private static Stream<Arguments> providerUpdateTitle() {
+		return Stream.of(
+			Arguments.of(
+				"title".repeat(100)
+			)
+		);
+	}
+
+	private static Stream<Arguments> providerUpdateContent() {
+		return Stream.of(
+			Arguments.of(
+				"content".repeat(3000)
 			)
 		);
 	}

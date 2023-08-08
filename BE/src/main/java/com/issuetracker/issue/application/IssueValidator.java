@@ -40,4 +40,10 @@ public class IssueValidator {
 			throw new CustomHttpException(ErrorType.ISSUE_NOT_FOUND);
 		}
 	}
+
+	public void verifyNonNullUpdateData(Object object) {
+		if (Objects.isNull(object)) {
+			throw new CustomHttpException(ErrorType.ISSUE_UPDATE_NULL);
+		}
+	}
 }

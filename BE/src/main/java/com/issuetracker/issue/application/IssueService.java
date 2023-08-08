@@ -76,12 +76,14 @@ public class IssueService {
 
 	@Transactional
 	public void updateIssueTitle(IssueUpdateData issueUpdateData) {
+		issueValidator.verifyNonNullUpdateData(issueUpdateData.getTitle());
 		int updatedCount = issueRepository.updateTitle(issueUpdateData.getId(), issueUpdateData.getTitle());
 		issueValidator.verifyUpdatedOrDeletedCount(updatedCount);
 	}
 
 	@Transactional
 	public void updateIssueContent(IssueUpdateData issueUpdateData) {
+		issueValidator.verifyNonNullUpdateData(issueUpdateData.getContent());
 		int updatedCount = issueRepository.updateContent(issueUpdateData.getId(), issueUpdateData.getContent());
 		issueValidator.verifyUpdatedOrDeletedCount(updatedCount);
 	}

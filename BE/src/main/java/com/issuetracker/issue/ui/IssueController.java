@@ -96,13 +96,13 @@ public class IssueController {
 	}
 
 	@PatchMapping("/{id}/title")
-	public ResponseEntity<Void> updateIssueTitle(@PathVariable long id, @RequestBody IssueUpdateRequest issueUpdateRequest) {
+	public ResponseEntity<Void> updateIssueTitle(@PathVariable long id, @RequestBody @Valid IssueUpdateRequest issueUpdateRequest) {
 		issueService.updateIssueTitle(issueUpdateRequest.toIssueUpdateDataTitle(id));
 		return ResponseEntity.noContent().build();
 	}
 
 	@PatchMapping("/{id}/content")
-	public ResponseEntity<Void> updateIssueContent(@PathVariable long id, @RequestBody IssueUpdateRequest issueUpdateRequest) {
+	public ResponseEntity<Void> updateIssueContent(@PathVariable long id, @RequestBody @Valid IssueUpdateRequest issueUpdateRequest) {
 		issueService.updateIssueContent(issueUpdateRequest.toIssueUpdateDataContent(id));
 		return ResponseEntity.noContent().build();
 	}
