@@ -1,5 +1,6 @@
 package com.issuetracker.unit.infrastrucure;
 
+import static com.issuetracker.util.fixture.IssueFixture.ISSUE1;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
@@ -67,5 +68,14 @@ class IssueRepositoryTest {
 		assertThat(actual.getIssueCloseCount()).isEqualTo(6);
 		assertThat(actual.getLabelCount()).isEqualTo(7);
 		assertThat(actual.getMilestoneCount()).isEqualTo(4);
+	}
+
+	@Test
+	void 이슈_열림_닫힘_수정한다() {
+		// when
+		int actual = issueRepository.updateOpen(ISSUE1.getId(), false);
+
+		// then
+		assertThat(actual).isEqualTo(1);
 	}
 }
