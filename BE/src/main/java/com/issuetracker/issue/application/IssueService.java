@@ -73,4 +73,10 @@ public class IssueService {
 		int updatedCount = issueRepository.updateOpen(issueUpdateData.getId(), issueUpdateData.getIsOpen());
 		issueValidator.verifyUpdateIssue(updatedCount);
 	}
+
+	@Transactional
+	public void updateTitle(IssueUpdateData issueUpdateData) {
+		int updatedCount = issueRepository.updateTitle(issueUpdateData.getId(), issueUpdateData.getTitle());
+		issueValidator.verifyUpdateIssue(updatedCount);
+	}
 }

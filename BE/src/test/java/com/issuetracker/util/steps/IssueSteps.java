@@ -90,4 +90,13 @@ public class IssueSteps {
 			.when().patch("/api/issues/{id}/open", id)
 			.then().log().all().extract();
 	}
+
+	public static ExtractableResponse<Response> 이슈_제목_수정_요청(Long id, String title) {
+		return RestAssured.given().log().all()
+			.body(new IssueUpdateRequest(null, title, null))
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.accept(MediaType.APPLICATION_JSON_VALUE)
+			.when().patch("/api/issues/{id}/title", id)
+			.then().log().all().extract();
+	}
 }

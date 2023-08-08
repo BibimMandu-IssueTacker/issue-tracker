@@ -17,6 +17,7 @@ import static com.issuetracker.util.steps.IssueSteps.이슈_목록_조회_요청
 import static com.issuetracker.util.steps.IssueSteps.이슈_상세_조회_요청;
 import static com.issuetracker.util.steps.IssueSteps.이슈_열림_닫힘_수정_요청;
 import static com.issuetracker.util.steps.IssueSteps.이슈_작성_요청;
+import static com.issuetracker.util.steps.IssueSteps.이슈_제목_수정_요청;
 import static com.issuetracker.util.steps.IssueSteps.이슈에_등록_되어있는_담당자_목록_조회_요청;
 import static com.issuetracker.util.steps.IssueSteps.이슈에_등록_되어있는_라벨_목록_조회_요청;
 import static com.issuetracker.util.steps.IssueSteps.작성자_목록_조회_요청;
@@ -312,12 +313,43 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 	 * Then 요청이 실패된다.
 	 */
 	@Test
-	void 존재하지_않는_이슈로_열림_닫힘_수정한다() {
+	void 존재하지_않는_이슈로_열림_닫힘_수정_시_요청이_실패된다() {
 		// given
 		Long 존재하지_않는_이슈_아이디 = 20L;
 
 		// when
 		var response = 이슈_열림_닫힘_수정_요청(존재하지_않는_이슈_아이디, false);
+
+		// then
+		응답_상태코드_검증(response, HttpStatus.NOT_FOUND);
+	}
+
+	/**
+	 * Given 라벨, 마일스톤, 회원, 이슈를 생성하고
+	 * When 이슈 제목을 수정하면
+	 * Then 이슈_상세 조회에서 수정된 값을 확인할 수 있다.
+	 */
+	@Test
+	void 이슈_제목을_수정한다() {
+		// when
+		var response = 이슈_제목_수정_요청(ISSUE1.getId(), "수정한 제목");
+
+		// then
+		응답_상태코드_검증(response, HttpStatus.NO_CONTENT);
+		이슈_상세_조회에서_수정한_값_검증(ISSUE1.getId(), "title", "수정한 제목");
+	}
+
+	/**
+	 * When 존재하지 않는 이슈로 제목을 수정하면
+	 * Then 요청이 실패된다.
+	 */
+	@Test
+	void 존재하지_않는_이슈로_제목을_수정_시_요청이_실패된다() {
+		// given
+		Long 존재하지_않는_이슈_아이디 = 20L;
+
+		// when
+		var response = 이슈_제목_수정_요청(존재하지_않는_이슈_아이디, "수정한 제목");
 
 		// then
 		응답_상태코드_검증(response, HttpStatus.NOT_FOUND);

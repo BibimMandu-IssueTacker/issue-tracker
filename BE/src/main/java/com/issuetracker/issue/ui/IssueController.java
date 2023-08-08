@@ -87,4 +87,10 @@ public class IssueController {
 		issueService.updateOpen(issueUpdateRequest.toIssueUpdateDataOpen(id));
 		return ResponseEntity.noContent().build();
 	}
+
+	@PatchMapping("/{id}/title")
+	public ResponseEntity<Void> updateTitle(@PathVariable long id, @RequestBody IssueUpdateRequest issueUpdateRequest) {
+		issueService.updateTitle(issueUpdateRequest.toIssueUpdateDataTitle(id));
+		return ResponseEntity.noContent().build();
+	}
 }

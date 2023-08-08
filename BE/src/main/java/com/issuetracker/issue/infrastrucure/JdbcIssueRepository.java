@@ -24,6 +24,7 @@ public class JdbcIssueRepository implements IssueRepository {
 	private static final String SAVE_SQL = "INSERT INTO issue(title, content, is_open, create_at, milestone_id, author_id) VALUES(:title, :content, :isOpen, :createAt, :milestoneId, :authorId)";
 	private static final String FIND_ALL_COUNT_SQL = "SELECT SUM(CASE WHEN is_open = 0 THEN 1 ELSE 0 END) AS issue_close_count, SUM(CASE WHEN is_open = 1 THEN 1 ELSE 0 END) AS issue_open_count, (SELECT COUNT(id) FROM label) AS label_count, (SELECT COUNT(id) FROM milestone) AS milestone_count FROM issue";
 	private static final String UPDATE_IS_OPEN_SQL = "UPDATE issue SET is_open = :isOpen WHERE id = :id";
+	private static final String UPDATE_TITLE_SQL = "UPDATE issue SET title = :title WHERE id = :id";
 
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -50,6 +51,14 @@ public class JdbcIssueRepository implements IssueRepository {
 			.addValue("id", id)
 			.addValue("isOpen", isOpen);
 		return jdbcTemplate.update(UPDATE_IS_OPEN_SQL, param);
+	}
+
+	@Override
+	public int updateTitle(long id, String title) {
+		SqlParameterSource param = new MapSqlParameterSource()
+			.addValue("id", id)
+			.addValue("title", title);
+		return jdbcTemplate.update(UPDATE_TITLE_SQL, param);
 	}
 
 	private static final RowMapper<IssuesCountData> ISSUE_MAIN_PAGE_COUNT_ROW_MAPPER = (rs, rowNum) ->

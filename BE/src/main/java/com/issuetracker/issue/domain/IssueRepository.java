@@ -1,7 +1,5 @@
 package com.issuetracker.issue.domain;
 
-import java.util.Optional;
-
 public interface IssueRepository {
 
 	Long save(Issue issue);
@@ -9,4 +7,6 @@ public interface IssueRepository {
 	IssuesCountData findAllCount();
 
 	int updateOpen(long id, boolean isOpe);
+
+	int updateTitle(long id, String title);
 }
