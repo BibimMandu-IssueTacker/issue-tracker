@@ -30,9 +30,15 @@ public class LabelSteps {
 	public static ExtractableResponse<Response> 레이블_수정_요청(LabelUpdateRequest labelUpdateRequest, Long labelId) {
 		return RestAssured.given().log().all()
 			.body(labelUpdateRequest)
-			//.accept(MediaType.APPLICATION_JSON_VALUE)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when().put("/api/labels/" + labelId)
+			.then().log().all().extract();
+	}
+
+	public static ExtractableResponse<Response> 레이블_삭제_요청(Long labelId) {
+		return RestAssured.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when().delete("/api/labels/" + labelId)
 			.then().log().all().extract();
 	}
 
