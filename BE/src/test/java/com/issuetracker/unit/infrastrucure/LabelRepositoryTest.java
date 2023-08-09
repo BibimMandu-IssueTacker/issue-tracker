@@ -71,4 +71,16 @@ class LabelRepositoryTest {
 		assertThat(result).isEqualTo(1);
 	}
 
+	@Test
+	void 레이블을_삭제할_수_있ㄷ다() {
+		// given
+		Label label = Label.builder()
+			.id(1L).build();
+
+		// when
+		int result = labelRepository.delete(label);
+
+		// then
+		assertThat(result).isEqualTo(1);
+	}
 }
