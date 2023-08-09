@@ -70,4 +70,21 @@ class MilestoneRepositoryTest {
 		// then
 		assertThat(result).isPositive();
 	}
+
+	@Test
+	void 마일스톤을_수정할_수_있다() {
+		// given
+		Milestone milestone = Milestone.builder()
+			.id(1L)
+			.title("수정된 마일스톤 제목")
+			.description("수정된 마일스톤 설명")
+			.deadline(LocalDate.of(2023, 8, 8))
+			.build();
+
+		// when
+		int result = milestoneRepository.update(milestone);
+
+		// then
+		assertThat(result).isEqualTo(1);
+	}
 }
