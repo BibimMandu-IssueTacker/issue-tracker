@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import com.issuetracker.config.exception.CustomHttpException;
 import com.issuetracker.config.exception.ErrorType;
 import com.issuetracker.issue.application.dto.IssueCreateInputData;
-import com.issuetracker.issue.domain.AssigneeRepository;
+import com.issuetracker.issue.domain.assignee.AssigneeRepository;
 import com.issuetracker.issue.domain.IssueDetailRead;
 import com.issuetracker.issue.domain.IssueRepository;
 import com.issuetracker.label.application.LabelValidator;

@@ -1,6 +1,6 @@
-package com.issuetracker.issue.application.dto;
+package com.issuetracker.issue.application.dto.assignee;
 
-import com.issuetracker.issue.domain.Assignee;
+import com.issuetracker.issue.domain.assignee.Assignee;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

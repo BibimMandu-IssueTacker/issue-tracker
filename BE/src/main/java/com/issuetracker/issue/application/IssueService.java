@@ -6,11 +6,11 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.issuetracker.issue.application.dto.AssigneeCandidatesInformation;
-import com.issuetracker.issue.application.dto.AssigneeCreateData;
-import com.issuetracker.issue.application.dto.IssueCommentCreateData;
-import com.issuetracker.issue.application.dto.IssueCommentCreateInformation;
-import com.issuetracker.issue.application.dto.IssueCommentUpdateData;
+import com.issuetracker.issue.application.dto.assignee.AssigneeCandidatesInformation;
+import com.issuetracker.issue.application.dto.assignee.AssigneeCreateData;
+import com.issuetracker.issue.application.dto.comment.IssueCommentCreateData;
+import com.issuetracker.issue.application.dto.comment.IssueCommentCreateInformation;
+import com.issuetracker.issue.application.dto.comment.IssueCommentUpdateData;
 import com.issuetracker.issue.application.dto.IssueCreateInformation;
 import com.issuetracker.issue.application.dto.IssueCreateInputData;
 import com.issuetracker.issue.application.dto.IssueDetailInformation;
@@ -18,11 +18,11 @@ import com.issuetracker.issue.application.dto.IssueSearchInformation;
 import com.issuetracker.issue.application.dto.IssueSearchInputData;
 import com.issuetracker.issue.application.dto.IssueUpdateData;
 import com.issuetracker.issue.application.dto.IssuesCountInformation;
-import com.issuetracker.issue.application.dto.LabelCandidatesInformation;
-import com.issuetracker.issue.domain.AssignedLabelRepository;
-import com.issuetracker.issue.domain.AssigneeRepository;
+import com.issuetracker.issue.application.dto.assignedlabel.AssignedLabelCandidatesInformation;
+import com.issuetracker.issue.domain.assignedlabel.AssignedLabelRepository;
+import com.issuetracker.issue.domain.assignee.AssigneeRepository;
 import com.issuetracker.issue.domain.Issue;
-import com.issuetracker.issue.domain.IssueCommentRepository;
+import com.issuetracker.issue.domain.comment.IssueCommentRepository;
 import com.issuetracker.issue.domain.IssueDetailRead;
 import com.issuetracker.issue.domain.IssueMapper;
 import com.issuetracker.issue.domain.IssueRepository;
@@ -127,9 +127,9 @@ public class IssueService {
 			);
 	}
 
-	public LabelCandidatesInformation searchLabelCandidates(long issueId) {
+	public AssignedLabelCandidatesInformation searchLabelCandidates(long issueId) {
 
-		return LabelCandidatesInformation
+		return AssignedLabelCandidatesInformation
 			.from(
 				assignedLabelRepository.findAllAssignedToIssue(issueId),
 				assignedLabelRepository.findAllUnassignedToIssue(issueId)

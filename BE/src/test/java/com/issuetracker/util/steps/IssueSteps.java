@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.springframework.http.MediaType;
 
-import com.issuetracker.issue.ui.dto.AssigneeCreateRequest;
-import com.issuetracker.issue.ui.dto.IssueCommentCreateRequest;
+import com.issuetracker.issue.ui.dto.assignee.AssigneeCreateRequest;
+import com.issuetracker.issue.ui.dto.comment.IssueCommentCreateRequest;
 import com.issuetracker.issue.ui.dto.IssueCreateRequest;
 import com.issuetracker.issue.ui.dto.IssueSearchRequest;
 import com.issuetracker.issue.ui.dto.IssueUpdateRequest;

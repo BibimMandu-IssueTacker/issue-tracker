@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import com.issuetracker.issue.domain.Assignee;
-import com.issuetracker.issue.domain.AssigneeRepository;
+import com.issuetracker.issue.domain.assignee.Assignee;
+import com.issuetracker.issue.domain.assignee.AssigneeRepository;
 import com.issuetracker.issue.infrastrucure.JdbcAssigneeRepository;
 import com.issuetracker.member.domain.Member;
 import com.issuetracker.util.DatabaseInitialization;

@@ -1,6 +1,6 @@
-package com.issuetracker.issue.ui.dto;
+package com.issuetracker.issue.ui.dto.assignee;
 
-import com.issuetracker.issue.application.dto.AssigneeCreateData;
+import com.issuetracker.issue.application.dto.assignee.AssigneeCreateData;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

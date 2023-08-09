@@ -18,7 +18,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import com.issuetracker.issue.ui.dto.AuthorResponses;
+import com.issuetracker.issue.ui.dto.assignee.AuthorResponses;
 import com.issuetracker.milestone.ui.dto.MilestonesSearchResponse;
 import com.issuetracker.util.AcceptanceTest;
 

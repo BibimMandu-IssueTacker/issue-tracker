@@ -12,8 +12,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.issuetracker.issue.domain.Assignee;
-import com.issuetracker.issue.domain.AssigneeRepository;
+import com.issuetracker.issue.domain.assignee.Assignee;
+import com.issuetracker.issue.domain.assignee.AssigneeRepository;
 import com.issuetracker.member.domain.Member;
 
 @Repository
