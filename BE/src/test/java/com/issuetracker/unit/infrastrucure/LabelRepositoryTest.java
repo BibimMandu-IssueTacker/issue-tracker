@@ -72,7 +72,7 @@ class LabelRepositoryTest {
 	}
 
 	@Test
-	void 레이블을_삭제할_수_있ㄷ다() {
+	void 레이블을_삭제할_수_있다() {
 		// given
 		Label label = Label.builder()
 			.id(1L).build();

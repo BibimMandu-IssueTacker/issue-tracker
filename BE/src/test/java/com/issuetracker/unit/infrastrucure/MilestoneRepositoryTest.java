@@ -1,7 +1,8 @@
 package com.issuetracker.unit.infrastrucure;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -52,5 +53,21 @@ class MilestoneRepositoryTest {
 
 		// then
 		assertThat(milestones).isNotEmpty();
+	}
+
+	@Test
+	void 마일스톤을_생성할_수_있다() {
+		// given
+		Milestone milestone = Milestone.builder()
+			.title("마일스톤 제목")
+			.description("마일스톤 설명")
+			.deadline(LocalDate.of(2023, 8, 8))
+			.build();
+
+		// when
+		Long result = milestoneRepository.save(milestone);
+
+		// then
+		assertThat(result).isPositive();
 	}
 }
