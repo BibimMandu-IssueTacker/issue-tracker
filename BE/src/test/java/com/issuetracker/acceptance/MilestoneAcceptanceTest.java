@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 
 import com.issuetracker.milestone.ui.dto.MilestoneCreateRequest;
 import com.issuetracker.milestone.ui.dto.MilestoneResponse;
+import com.issuetracker.milestone.ui.dto.MilestoneUpdateRequest;
 import com.issuetracker.milestone.ui.dto.MilestonesResponse;
 import com.issuetracker.util.AcceptanceTest;
 import com.issuetracker.util.steps.MilestoneSteps;
@@ -90,7 +91,7 @@ public class MilestoneAcceptanceTest extends AcceptanceTest {
 	 * Then 400에러를 반환한다.
 	 */
 	@Test
-	void 마일스톤을_생성시_색상이_데드라인_형식이_올바르지_않으면_400에러를_반환한다() {
+	void 마일스톤을_생성시_데드라인_형식이_올바르지_않으면_400에러를_반환한다() {
 		// given
 		MilestoneCreateRequest milestoneCreateRequest = new MilestoneCreateRequest(
 			"마일스톤 제목",
@@ -100,6 +101,96 @@ public class MilestoneAcceptanceTest extends AcceptanceTest {
 
 		// when
 		var response = 마일스톤_생성_요청(milestoneCreateRequest);
+
+		// then
+		응답_상태코드_검증(response, HttpStatus.BAD_REQUEST);
+	}
+
+	/**
+	 * Given 마일스톤 제목, 마일스톤 설명, 마일스톤 데드라인을 생성하고
+	 * When 마일스톤을 수정 하면
+	 * Then 마일스톤 목록 조회 시 수정한 마일스톤을 확인 할 수 있다.
+	 */
+	@Test
+	void 마일스톤을_수정한다() {
+		// given
+		Long milestoneId = 1L;
+		MilestoneUpdateRequest milestoneUpdateRequest = new MilestoneUpdateRequest(
+			"수정된 마일스톤 제목",
+			"수정된 마일스톤 설명",
+			"2023.10.10"
+		);
+
+		// when
+		var response = 마일스톤_수정_요청(milestoneUpdateRequest, milestoneId);
+
+		// then
+		응답_상태코드_검증(response, HttpStatus.NO_CONTENT);
+		마일스톤_목록_조회_시_수정된_마일스톤을_검증(response, milestoneUpdateRequest, milestoneId);
+	}
+
+	/**
+	 * Given 마일스톤 제목, 마일스톤 설명, 마일스톤 데드라인을 생성하고
+	 * When 마일스톤을 수정시 제목이 공백이면
+	 * Then 400에러를 반환한다.
+	 */
+	@Test
+	void 마일스톤을_수정시_제목이_공백이면_400에러를_반환한다() {
+		// given
+		Long milestoneId = 1L;
+		MilestoneUpdateRequest milestoneUpdateRequest = new MilestoneUpdateRequest(
+			"",
+			"수정된 마일스톤 설명",
+			"2023.10.10"
+		);
+
+		// when
+		var response = 마일스톤_수정_요청(milestoneUpdateRequest, milestoneId);
+
+		// then
+		응답_상태코드_검증(response, HttpStatus.BAD_REQUEST);
+	}
+
+	/**
+	 * Given 마일스톤 제목, 마일스톤 설명, 마일스톤 데드라인을 생성하고
+	 * When 마일스톤을 수정시 마일스톤 설명은 없어도
+	 * Then 마일스톤을 수정한다.
+	 */
+	@Test
+	void 마일스톤을_수정시_마일스톤_설명은_없어도_마일스톤을_수정한다() {
+		// given
+		Long milestoneId = 1L;
+		MilestoneUpdateRequest milestoneUpdateRequest = new MilestoneUpdateRequest(
+			"수정된 마일스톤 제목",
+			null,
+			"2023.10.10"
+		);
+
+		// when
+		var response = 마일스톤_수정_요청(milestoneUpdateRequest, milestoneId);
+
+		// then
+		응답_상태코드_검증(response, HttpStatus.NO_CONTENT);
+		마일스톤_목록_조회_시_수정된_마일스톤을_검증(response, milestoneUpdateRequest, milestoneId);
+	}
+
+	/**
+	 * Given 마일스톤 제목, 마일스톤 설명, 마일스톤 데드라인을 생성하고
+	 * When 마일스톤을 수정시 데드라인이 yyyy.MM.dd 형식이 아니면
+	 * Then 400에러를 반환한다.
+	 */
+	@Test
+	void 마일스톤을_수정시_데드라인_형식이_올바르지_않으면_400에러를_반환한다() {
+		// given
+		Long milestoneId = 1L;
+		MilestoneUpdateRequest milestoneUpdateRequest = new MilestoneUpdateRequest(
+			"수정된 마일스톤 제목",
+			"수정된 마일스톤 설명",
+			"2023-10-10"
+		);
+
+		// when
+		var response = 마일스톤_수정_요청(milestoneUpdateRequest, milestoneId);
 
 		// then
 		응답_상태코드_검증(response, HttpStatus.BAD_REQUEST);
@@ -118,6 +209,22 @@ public class MilestoneAcceptanceTest extends AcceptanceTest {
 			.isEqualTo(milestoneCreateRequest.getDescription());
 		softAssertions.assertThat(lastMilestoneResponse.makeStringDeadline())
 			.isEqualTo(milestoneCreateRequest.getDeadline());
+		softAssertions.assertAll();
+	}
+
+	private void 마일스톤_목록_조회_시_수정된_마일스톤을_검증(ExtractableResponse<Response> response,
+		MilestoneUpdateRequest milestoneUpdateRequest, Long milestoneId) {
+		var findResponse = 마일스톤_목록_조회_요청();
+		List<MilestoneResponse> milestoneResponse = findResponse.as(MilestonesResponse.class).getMilestones();
+		MilestoneResponse lastMilestoneResponse = milestoneResponse.get(Long.valueOf(milestoneId - 1L).intValue());
+
+		SoftAssertions softAssertions = new SoftAssertions();
+		softAssertions.assertThat(lastMilestoneResponse.getId()).isEqualTo(milestoneId);
+		softAssertions.assertThat(lastMilestoneResponse.getTitle()).isEqualTo(milestoneUpdateRequest.getTitle());
+		softAssertions.assertThat(lastMilestoneResponse.getDescription())
+			.isEqualTo(milestoneUpdateRequest.getDescription());
+		softAssertions.assertThat(lastMilestoneResponse.makeStringDeadline())
+			.isEqualTo(milestoneUpdateRequest.getDeadline());
 		softAssertions.assertAll();
 	}
 }
