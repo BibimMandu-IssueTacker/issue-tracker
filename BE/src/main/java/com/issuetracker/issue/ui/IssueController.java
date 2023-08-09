@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.issuetracker.issue.application.IssueService;
 import com.issuetracker.issue.application.dto.IssueCreateInputData;
+import com.issuetracker.issue.application.dto.assignedlabel.AssignedLabelCreateData;
 import com.issuetracker.issue.application.dto.assignee.AssigneeCreateData;
 import com.issuetracker.issue.application.dto.comment.IssueCommentCreateData;
+import com.issuetracker.issue.ui.dto.assignedlabel.AssignedLabelCreateRequest;
+import com.issuetracker.issue.ui.dto.assignedlabel.AssignedLabelCreateResponse;
 import com.issuetracker.issue.ui.dto.assignedlabel.AssignedLabelResponses;
 import com.issuetracker.issue.ui.dto.assignee.AssigneeCandidatesResponse;
 import com.issuetracker.issue.ui.dto.assignee.AssigneesCreateResponse;
@@ -173,5 +176,12 @@ public class IssueController {
 	public ResponseEntity<Void> deleteAssignee(@PathVariable("assignee-id") Long assigneeId) {
 		issueService.deleteAssignee(assigneeId);
 		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping("/{id}/assignedLebels")
+	public ResponseEntity<AssignedLabelCreateResponse> createAssignedLabel(@PathVariable Long id, @RequestBody AssignedLabelCreateRequest assignedLabelCreateRequest) {
+		AssignedLabelCreateData assignedLabelCreateData = assignedLabelCreateRequest.toAssignedLabelCreateData(id);
+		AssignedLabelCreateResponse assignedLabelCreateResponse = AssignedLabelCreateResponse.from(issueService.createAssignedLabel(assignedLabelCreateData));
+		return ResponseEntity.ok().body(assignedLabelCreateResponse);
 	}
 }
