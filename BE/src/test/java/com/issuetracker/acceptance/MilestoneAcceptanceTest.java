@@ -4,6 +4,7 @@ import static com.issuetracker.util.steps.MilestoneSteps.*;
 
 import java.util.List;
 
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -196,6 +197,41 @@ public class MilestoneAcceptanceTest extends AcceptanceTest {
 		응답_상태코드_검증(response, HttpStatus.BAD_REQUEST);
 	}
 
+	/**
+	 * Given 삭제할 마일스톤 id를 결정하고
+	 * When 마일스톤을 삭제 하면
+	 * Then 마일스톤 목록 조회 시 삭제된 마일스톤을 찾을 수 없다.
+	 */
+	@Test
+	void 마일스톤을_삭제한다() {
+		// given
+		Long milestoneId = 1L;
+
+		// when
+		var response = 마일스톤_삭제_요청(milestoneId);
+
+		// then
+		응답_상태코드_검증(response, HttpStatus.NO_CONTENT);
+		마일스톤_목록_조회_시_삭제된_마일스톤을_검증(response, milestoneId);
+	}
+
+	/**
+	 * Given 삭제할 마일스톤 id를 결정하고
+	 * When 마일스톤을 삭제할 때 없는 마일스톤을 삭제하려고 하면
+	 * Then 404 에러가 발생한다.
+	 */
+	@Test
+	void 마일스톤_삭제시_없는_마일스톤을_삭제하려고_하면_404_에러가_발생한다() {
+		// given
+		Long milestoneId = 999L;
+
+		// when
+		var response = 마일스톤_삭제_요청(milestoneId);
+
+		// then
+		응답_상태코드_검증(response, HttpStatus.NOT_FOUND);
+	}
+
 	private void 마일스톤_목록_조회_시_생성된_마일스톤을_검증(ExtractableResponse<Response> response,
 		MilestoneCreateRequest milestoneCreateRequest) {
 		var findResponse = 마일스톤_목록_조회_요청();
@@ -226,5 +262,14 @@ public class MilestoneAcceptanceTest extends AcceptanceTest {
 		softAssertions.assertThat(lastMilestoneResponse.makeStringDeadline())
 			.isEqualTo(milestoneUpdateRequest.getDeadline());
 		softAssertions.assertAll();
+	}
+
+	private void 마일스톤_목록_조회_시_삭제된_마일스톤을_검증(ExtractableResponse<Response> response, Long milestoneId) {
+		var findResponse = 마일스톤_목록_조회_요청();
+		List<MilestoneResponse> milestoneResponses = findResponse.as(MilestonesResponse.class).getMilestones();
+
+		for (MilestoneResponse milestoneResponse : milestoneResponses) {
+			Assertions.assertThat(milestoneResponse.getId()).isNotEqualTo(milestoneId);
+		}
 	}
 }

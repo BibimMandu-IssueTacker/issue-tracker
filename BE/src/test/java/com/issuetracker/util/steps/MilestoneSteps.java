@@ -36,4 +36,10 @@ public class MilestoneSteps {
 			.then().log().all().extract();
 	}
 
+	public static ExtractableResponse<Response> 마일스톤_삭제_요청(Long milestoneId) {
+		return RestAssured.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when().delete("/api/milestones/" + milestoneId)
+			.then().log().all().extract();
+	}
 }
