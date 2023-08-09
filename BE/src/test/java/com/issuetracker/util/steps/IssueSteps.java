@@ -151,4 +151,11 @@ public class IssueSteps {
 			.when().post("/api/issues/{id}/assignees", id)
 			.then().log().all().extract();
 	}
+
+	public static ExtractableResponse<Response> 이슈에_담당자_삭제_요청(Long id, Long assigneeId) {
+		return RestAssured.given().log().all()
+			.accept(MediaType.APPLICATION_JSON_VALUE)
+			.when().delete("/api/issues/{id}/assignees/{assignee-id}", id, assigneeId)
+			.then().log().all().extract();
+	}
 }

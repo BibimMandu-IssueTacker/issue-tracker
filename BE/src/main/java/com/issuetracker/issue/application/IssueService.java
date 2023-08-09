@@ -141,4 +141,9 @@ public class IssueService {
 		issueValidator.verifyCreateAssignee(assigneeCreateData.getIssueId(), assigneeCreateData.getMemberId());
 		assigneeRepository.save(assigneeCreateData.toAssignee());
 	}
+
+	@Transactional
+	public int deleteAssignee(Long assigneeId) {
+		return assigneeRepository.delete(assigneeId);
+	}
 }

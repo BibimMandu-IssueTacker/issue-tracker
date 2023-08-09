@@ -164,4 +164,10 @@ public class IssueController {
 		issueService.createAssignee(assigneeCreateRequest.toAssigneeCreateData(id));
 		return ResponseEntity.ok().build();
 	}
+
+	@DeleteMapping("/{id}/assignees/{assignee-id}")
+	public ResponseEntity<Void> deleteAssignee(@PathVariable("assignee-id") Long assigneeId) {
+		issueService.deleteAssignee(assigneeId);
+		return ResponseEntity.noContent().build();
+	}
 }

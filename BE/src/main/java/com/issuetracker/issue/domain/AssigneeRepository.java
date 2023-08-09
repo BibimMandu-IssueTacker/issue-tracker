@@ -15,4 +15,6 @@ public interface AssigneeRepository {
 	List<Member> findAllUnassignedToIssue(long issueId);
 
 	long save(Assignee assignee);
+
+	int delete(Long id);
 }

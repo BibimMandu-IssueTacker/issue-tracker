@@ -20,6 +20,7 @@ import com.issuetracker.member.domain.Member;
 public class JdbcAssigneeRepository implements AssigneeRepository {
 
 	private static final String SAVE_SQL = "INSERT INTO assignee(issue_id, member_id) VALUES(:issueId, :memberId)";
+	private static final String DELETE_SQL = "DELETE FROM assignee WHERE id = :id";
 	private static final String FIND_ALL_SQL = "SELECT DISTINCT member.id, member.nickname, member.profile_image_url FROM member INNER JOIN assignee ON member.id = assignee.member_id ORDER BY member.id";
 	private static final String FIND_ALL_ASSIGNED_TO_ISSUE
 		= "SELECT member.id, member.nickname, member.profile_image_url "
@@ -70,6 +71,11 @@ public class JdbcAssigneeRepository implements AssigneeRepository {
 	@Override
 	public List<Member> findAllUnassignedToIssue(long issueId) {
 		return jdbcTemplate.query(FIND_ALL_UNASSIGNED_TO_ISSUE, Map.of("issueId", issueId), MEMBER_ROW_MAPPER);
+	}
+
+	@Override
+	public int delete(Long id) {
+		return jdbcTemplate.update(DELETE_SQL, Map.of("id", id));
 	}
 
 	private static final RowMapper<Member> MEMBER_ROW_MAPPER = (rs, rowNum) ->
