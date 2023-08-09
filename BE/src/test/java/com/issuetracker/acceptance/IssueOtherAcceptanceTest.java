@@ -3,6 +3,7 @@ package com.issuetracker.acceptance;
 import static com.issuetracker.util.fixture.IssueFixture.ISSUE1;
 import static com.issuetracker.util.fixture.IssueFixture.ISSUE2;
 import static com.issuetracker.util.fixture.MemberFixture.MEMBER1;
+import static com.issuetracker.util.fixture.MemberFixture.MEMBER4;
 import static com.issuetracker.util.steps.IssueSteps.마일스톤_목록_조회_요청;
 import static com.issuetracker.util.steps.IssueSteps.이슈에_담당자_등록_요청;
 import static com.issuetracker.util.steps.IssueSteps.이슈에_등록_되어있는_담당자_목록_조회_요청;
@@ -86,16 +87,30 @@ public class IssueOtherAcceptanceTest extends AcceptanceTest {
 	/**
 	 * Given 라벨, 회원, 이슈를 생성하고
 	 * When 해당 이슈에 담당자를 등록하면
-	 * Then 이슈 상세 조회에서 등록된 담당자를 확인 할 수 있다.
+	 * Then 등록 및 삭제될 담당자 목록에서 등록된 담당자를 확인 할 수 있다.
 	 */
 	@Test
 	void 이슈에_담당자를_등록한다() {
 		// when
-		var response = 이슈에_담당자_등록_요청(ISSUE1.getId(), MEMBER1.getId());
+		var response = 이슈에_담당자_등록_요청(ISSUE1.getId(), MEMBER4.getId());
 
 		// then
 		응답_상태코드_검증(response, HttpStatus.OK);
-		이슈에_등록_및_삭제될_담당자_목록에서_등록된_담당자_검증(ISSUE1.getId(), MEMBER1.getId());
+		이슈에_등록_및_삭제될_담당자_목록에서_등록된_담당자_검증(ISSUE1.getId(), MEMBER4.getId());
+	}
+
+	/**
+	 * Given 라벨, 회원, 이슈를 생성하고
+	 * When 해당 이슈에 담당자 등록 시 이미 등록된 담당자이면
+	 * Then 요청이 실패된다.
+	 */
+	@Test
+	void 이슈에_담당자를_등록_시_이미_등록된_담당자인_경우_요청이_실패된다() {
+		// when
+		var response = 이슈에_담당자_등록_요청(ISSUE1.getId(), MEMBER1.getId());
+
+		// then
+		응답_상태코드_검증(response, HttpStatus.BAD_REQUEST);
 	}
 
 	/**
