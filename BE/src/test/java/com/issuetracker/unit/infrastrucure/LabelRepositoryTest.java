@@ -46,12 +46,29 @@ class LabelRepositoryTest {
 	}
 
 	@Test
-	void 레이블_아이디_목록을_조회할_수_있다() {
+	void 레이블_목록을_조회할_수_있다() {
 		// when
 		List<Label> result = labelRepository.findAll();
 
 		// then
 		assertThat(result).isNotEmpty();
+	}
+
+	@Test
+	void 레이블을_수정할_수_있다() {
+		// given
+		Label label = Label.builder()
+			.id(1L)
+			.title("수정된 제목")
+			.description("수정된 설명")
+			.color("#000000")
+			.build();
+
+		// when
+		int result = labelRepository.update(label);
+
+		// then
+		assertThat(result).isEqualTo(1);
 	}
 
 }
