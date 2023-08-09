@@ -178,10 +178,16 @@ public class IssueController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@PostMapping("/{id}/assignedLebels")
+	@PostMapping("/{id}/assigned-labels")
 	public ResponseEntity<AssignedLabelCreateResponse> createAssignedLabel(@PathVariable Long id, @RequestBody AssignedLabelCreateRequest assignedLabelCreateRequest) {
 		AssignedLabelCreateData assignedLabelCreateData = assignedLabelCreateRequest.toAssignedLabelCreateData(id);
 		AssignedLabelCreateResponse assignedLabelCreateResponse = AssignedLabelCreateResponse.from(issueService.createAssignedLabel(assignedLabelCreateData));
 		return ResponseEntity.ok().body(assignedLabelCreateResponse);
+	}
+
+	@DeleteMapping("/{id}/assigned-labels/{assigned-label-id}")
+	public ResponseEntity<Void> deleteAssignedLabel(@PathVariable("assigned-label-id") Long assignedLabelId) {
+		issueService.deleteAssignedLabel(assignedLabelId);
+		return ResponseEntity.noContent().build();
 	}
 }

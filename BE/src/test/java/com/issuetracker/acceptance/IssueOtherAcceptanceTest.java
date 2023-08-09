@@ -1,5 +1,7 @@
 package com.issuetracker.acceptance;
 
+import static com.issuetracker.util.fixture.AssignedLabelFixture.ASSIGNED_LABEL1;
+import static com.issuetracker.util.fixture.AssigneeFixture.ASSIGNEE1;
 import static com.issuetracker.util.fixture.IssueFixture.ISSUE1;
 import static com.issuetracker.util.fixture.IssueFixture.ISSUE2;
 import static com.issuetracker.util.fixture.LabelFixture.LABEL1;
@@ -14,6 +16,7 @@ import static com.issuetracker.util.steps.IssueSteps.이슈에_등록_되어있�
 import static com.issuetracker.util.steps.IssueSteps.이슈에_등록_및_삭제될_담당자_목록_조회_요청;
 import static com.issuetracker.util.steps.IssueSteps.이슈에_등록_및_삭제될_라벨_목록_조회_요청;
 import static com.issuetracker.util.steps.IssueSteps.이슈에_라벨_등록_요청;
+import static com.issuetracker.util.steps.IssueSteps.이슈에_라벨_삭제_요청;
 import static com.issuetracker.util.steps.IssueSteps.작성자_목록_조회_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,6 +28,7 @@ import org.springframework.http.HttpStatus;
 import com.issuetracker.issue.ui.dto.assignee.AuthorResponses;
 import com.issuetracker.milestone.ui.dto.MilestonesSearchResponse;
 import com.issuetracker.util.AcceptanceTest;
+import com.issuetracker.util.fixture.AssignedLabelFixture;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -160,11 +164,11 @@ public class IssueOtherAcceptanceTest extends AcceptanceTest {
 	@Test
 	void 이슈에_담당자를_삭제한다() {
 		// when
-		var response = 이슈에_담당자_삭제_요청(ISSUE1.getId(), MEMBER1.getId());
+		var response = 이슈에_담당자_삭제_요청(ISSUE1.getId(), ASSIGNEE1.getId());
 
 		// then
 		응답_상태코드_검증(response, HttpStatus.NO_CONTENT);
-		이슈에_등록_및_삭제될_담당자_목록에서_삭제된_담당자_검증(ISSUE1.getId(), MEMBER1.getId());
+		이슈에_등록_및_삭제될_담당자_목록에서_삭제된_담당자_검증(ISSUE1.getId(), ASSIGNEE1.getIssueId());
 	}
 
 	/**
@@ -228,6 +232,27 @@ public class IssueOtherAcceptanceTest extends AcceptanceTest {
 
 		// then
 		응답_상태코드_검증(response, HttpStatus.NOT_FOUND);
+	}
+
+	/**
+	 * Given 회원, 이슈, 라벨을 생성하고
+	 * When 해당 이슈에 라벨을 삭제하면
+	 * Then 등록 및 삭제될 라벨 목록에서 삭제된 라벨을 찾을 수 없다.
+	 */
+	@Test
+	void 이슈에_라벨을_삭제한다() {
+		// when
+		var response = 이슈에_라벨_삭제_요청(ISSUE1.getId(), ASSIGNED_LABEL1.getId());
+
+		// then
+		응답_상태코드_검증(response, HttpStatus.NO_CONTENT);
+		이슈에_등록_및_삭제될_라벨_목록에서_삭제된_라벨_검증(ISSUE1.getId(), ASSIGNED_LABEL1.getLabelId());
+	}
+
+	private void 이슈에_등록_및_삭제될_라벨_목록에서_삭제된_라벨_검증(Long id, Long labelId) {
+		List<Long> labelIds = 이슈에_등록_및_삭제될_라벨_목록_조회_요청(id).jsonPath().getList("assignedLabels.id", Long.class);
+
+		assertThat(labelIds).doesNotContain(labelId);
 	}
 
 	private void 이슈에_등록_및_삭제될_라벨_목록에서_등록된_라벨_검증(Long id, Long labelId) {

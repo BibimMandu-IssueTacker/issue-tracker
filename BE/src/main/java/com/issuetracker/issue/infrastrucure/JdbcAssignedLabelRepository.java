@@ -20,6 +20,7 @@ import com.issuetracker.label.domain.Label;
 public class JdbcAssignedLabelRepository implements AssignedLabelRepository {
 
 	private static final String SAVE_SQL = "INSERT INTO assigned_label(issue_id, label_id) VALUES(:issueId, :labelId)";
+	private static final String DELETE_SQL = "DELETE FROM assigned_label WHERE id = :id";
 	private static final String FIND_ALL_SEARCH_SQL = "SELECT DISTINCT label.id, label.title, label.color, label.description FROM label INNER JOIN assigned_label ON label.id = assigned_label.label_id ORDER BY label.id";
 	private static final String FIND_ALL_ASSIGNED_TO_ISSUE
 		= "SELECT label.id, label.title, label.color, label.description "
@@ -70,6 +71,11 @@ public class JdbcAssignedLabelRepository implements AssignedLabelRepository {
 	@Override
 	public List<Label> findAllUnassignedToIssue(long issueId) {
 		return jdbcTemplate.query(FIND_ALL_UNASSIGNED_TO_ISSUE, Map.of("issueId", issueId), LABEL_ROW_MAPPER);
+	}
+
+	@Override
+	public int delete(Long id) {
+		return jdbcTemplate.update(DELETE_SQL, Map.of("id", id));
 	}
 
 	private static final RowMapper<Label> LABEL_ROW_MAPPER = (rs, rowNum) ->

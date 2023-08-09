@@ -172,7 +172,14 @@ public class IssueSteps {
 			.body(new AssignedLabelCreateRequest(labelId))
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.accept(MediaType.APPLICATION_JSON_VALUE)
-			.when().post("/api/issues/{id}/assignedLebels", id)
+			.when().post("/api/issues/{id}/assigned-labels", id)
+			.then().log().all().extract();
+	}
+
+	public static ExtractableResponse<Response> 이슈에_라벨_삭제_요청(Long id, Long assignedLabelId) {
+		return RestAssured.given().log().all()
+			.accept(MediaType.APPLICATION_JSON_VALUE)
+			.when().delete("/api/issues/{id}/assigned-labels/{assigned-label-id}", id, assignedLabelId)
 			.then().log().all().extract();
 	}
 }
