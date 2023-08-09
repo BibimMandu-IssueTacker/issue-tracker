@@ -87,4 +87,18 @@ class MilestoneRepositoryTest {
 		// then
 		assertThat(result).isEqualTo(1);
 	}
+
+	@Test
+	void 마일스톤을_삭제할_수_있다() {
+		// given
+		Milestone milestone = Milestone.builder()
+			.id(1L)
+			.build();
+
+		// when
+		int result = milestoneRepository.delete(milestone);
+
+		// then
+		assertThat(result).isEqualTo(1);
+	}
 }
