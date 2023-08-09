@@ -20,6 +20,7 @@ import com.issuetracker.issue.ui.dto.AssignedLabelResponses;
 import com.issuetracker.issue.ui.dto.AssigneeCandidatesResponse;
 import com.issuetracker.issue.ui.dto.AssigneesResponses;
 import com.issuetracker.issue.ui.dto.AuthorResponses;
+import com.issuetracker.issue.ui.dto.AssigneeCreateRequest;
 import com.issuetracker.issue.ui.dto.IssueCommentCreateRequest;
 import com.issuetracker.issue.ui.dto.IssueCommentCreateResponse;
 import com.issuetracker.issue.ui.dto.IssueCommentUpdateRequest;
@@ -156,5 +157,11 @@ public class IssueController {
 					issueService.searchLabelCandidates(id)
 				)
 			);
+	}
+
+	@PostMapping("/{id}/assignees")
+	public ResponseEntity<Void> createAssignee(@PathVariable Long id, @RequestBody AssigneeCreateRequest assigneeCreateRequest) {
+		issueService.createAssignee(assigneeCreateRequest.toAssigneeCreateData(id));
+		return ResponseEntity.ok().build();
 	}
 }

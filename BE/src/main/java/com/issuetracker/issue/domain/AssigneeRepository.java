@@ -13,4 +13,6 @@ public interface AssigneeRepository {
 	List<Member> findAllAssignedToIssue(long issueId);
 
 	List<Member> findAllUnassignedToIssue(long issueId);
+
+	long save(Assignee assignee);
 }

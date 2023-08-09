@@ -49,7 +49,7 @@ public class IssueValidator {
 		}
 	}
 
-	public void verifyNonNullUpdateData(Object object) {
+	public void verifyNonNull(Object object) {
 		if (Objects.isNull(object)) {
 			throw new CustomHttpException(ErrorType.ISSUE_UPDATE_NULL);
 		}
@@ -61,5 +61,16 @@ public class IssueValidator {
 		}
 
 		memberValidator.verifyMember(authorId);
+	}
+
+	public void verifyCreateAssignee(Long issueId, Long memberId) {
+		verifyIssue(issueId);
+		memberValidator.verifyMember(memberId);
+	}
+
+	public void verifyIssue(Long id) {
+		if(Objects.nonNull(id) && !issueRepository.existById(id)) {
+			throw new CustomHttpException(ErrorType.ISSUE_NOT_FOUND);
+		}
 	}
 }

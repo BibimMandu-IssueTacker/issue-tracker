@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.issuetracker.issue.application.dto.AssigneeCandidatesInformation;
+import com.issuetracker.issue.application.dto.AssigneeCreateData;
 import com.issuetracker.issue.application.dto.IssueCommentCreateData;
 import com.issuetracker.issue.application.dto.IssueCommentCreateInformation;
 import com.issuetracker.issue.application.dto.IssueCommentUpdateData;
@@ -83,14 +84,14 @@ public class IssueService {
 
 	@Transactional
 	public void updateIssueTitle(IssueUpdateData issueUpdateData) {
-		issueValidator.verifyNonNullUpdateData(issueUpdateData.getTitle());
+		issueValidator.verifyNonNull(issueUpdateData.getTitle());
 		int updatedCount = issueRepository.updateTitle(issueUpdateData.getId(), issueUpdateData.getTitle());
 		issueValidator.verifyUpdatedOrDeletedCount(updatedCount);
 	}
 
 	@Transactional
 	public void updateIssueContent(IssueUpdateData issueUpdateData) {
-		issueValidator.verifyNonNullUpdateData(issueUpdateData.getContent());
+		issueValidator.verifyNonNull(issueUpdateData.getContent());
 		int updatedCount = issueRepository.updateContent(issueUpdateData.getId(), issueUpdateData.getContent());
 		issueValidator.verifyUpdatedOrDeletedCount(updatedCount);
 	}
@@ -111,7 +112,7 @@ public class IssueService {
 
 	@Transactional
 	public void updateIssueCommentContent(IssueCommentUpdateData issueCommentUpdateData) {
-		issueValidator.verifyNonNullUpdateData(issueCommentUpdateData.getContent());
+		issueValidator.verifyNonNull(issueCommentUpdateData.getContent());
 		int updatedCount = issueCommentRepository.updateContent(issueCommentUpdateData.getIssueCommentId(),
 			issueCommentUpdateData.getContent());
 		issueValidator.verifyCommentUpdatedOrDeletedCount(updatedCount);
@@ -133,5 +134,11 @@ public class IssueService {
 				assignedLabelRepository.findAllAssignedToIssue(issueId),
 				assignedLabelRepository.findAllUnassignedToIssue(issueId)
 			);
+	}
+
+	@Transactional
+	public void createAssignee(AssigneeCreateData assigneeCreateData) {
+		issueValidator.verifyCreateAssignee(assigneeCreateData.getIssueId(), assigneeCreateData.getMemberId());
+		assigneeRepository.save(assigneeCreateData.toAssignee());
 	}
 }
