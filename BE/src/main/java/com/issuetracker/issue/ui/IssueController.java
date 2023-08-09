@@ -15,9 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.issuetracker.issue.application.IssueService;
+import com.issuetracker.issue.application.dto.IssueCreateInputData;
+import com.issuetracker.issue.application.dto.assignee.AssigneeCreateData;
 import com.issuetracker.issue.application.dto.comment.IssueCommentCreateData;
 import com.issuetracker.issue.ui.dto.assignedlabel.AssignedLabelResponses;
 import com.issuetracker.issue.ui.dto.assignee.AssigneeCandidatesResponse;
+import com.issuetracker.issue.ui.dto.assignee.AssigneesCreateResponse;
 import com.issuetracker.issue.ui.dto.assignee.AssigneesResponses;
 import com.issuetracker.issue.ui.dto.assignee.AuthorResponses;
 import com.issuetracker.issue.ui.dto.assignee.AssigneeCreateRequest;
@@ -57,8 +60,8 @@ public class IssueController {
 
 	@PostMapping
 	public ResponseEntity<IssueCreateResponse> createIssue(@RequestBody @Valid IssueCreateRequest issueCreateRequest) {
-		IssueCreateResponse issueCreateResponse = IssueCreateResponse.from(
-			issueService.create(issueCreateRequest.toIssueCreateData(1L)));
+		IssueCreateInputData issueCreateInputData = issueCreateRequest.toIssueCreateData(1L);
+		IssueCreateResponse issueCreateResponse = IssueCreateResponse.from(issueService.create(issueCreateInputData));
 		return ResponseEntity.created(URI.create("/issues/" + issueCreateResponse.getId()))
 			.body(issueCreateResponse);
 	}
@@ -124,7 +127,7 @@ public class IssueController {
 		IssueCommentCreateData issueCommentCreateData = issueCommentCreateRequest.toIssueCommentCreateData(id, 1L);
 		IssueCommentCreateResponse issueCommentCreateResponse = IssueCommentCreateResponse.from(
 			issueService.createIssueComment(issueCommentCreateData));
-		return ResponseEntity.created(URI.create("/" + id)).body(issueCommentCreateResponse);
+		return ResponseEntity.ok().body(issueCommentCreateResponse);
 	}
 
 	@PatchMapping("/{id}/comments/{comment-id}")
@@ -160,9 +163,10 @@ public class IssueController {
 	}
 
 	@PostMapping("/{id}/assignees")
-	public ResponseEntity<Void> createAssignee(@PathVariable Long id, @RequestBody AssigneeCreateRequest assigneeCreateRequest) {
-		issueService.createAssignee(assigneeCreateRequest.toAssigneeCreateData(id));
-		return ResponseEntity.ok().build();
+	public ResponseEntity<AssigneesCreateResponse> createAssignee(@PathVariable Long id, @RequestBody AssigneeCreateRequest assigneeCreateRequest) {
+		AssigneeCreateData assigneeCreateData = assigneeCreateRequest.toAssigneeCreateData(id);
+		AssigneesCreateResponse assigneesCreateResponse =  AssigneesCreateResponse.from(issueService.createAssignee(assigneeCreateData));
+		return ResponseEntity.ok().body(assigneesCreateResponse);
 	}
 
 	@DeleteMapping("/{id}/assignees/{assignee-id}")

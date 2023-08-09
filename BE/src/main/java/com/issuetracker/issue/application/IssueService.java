@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.issuetracker.issue.application.dto.assignee.AssigneeCandidatesInformation;
 import com.issuetracker.issue.application.dto.assignee.AssigneeCreateData;
+import com.issuetracker.issue.application.dto.assignee.AssigneeCreateInformation;
 import com.issuetracker.issue.application.dto.comment.IssueCommentCreateData;
 import com.issuetracker.issue.application.dto.comment.IssueCommentCreateInformation;
 import com.issuetracker.issue.application.dto.comment.IssueCommentUpdateData;
@@ -137,9 +138,9 @@ public class IssueService {
 	}
 
 	@Transactional
-	public void createAssignee(AssigneeCreateData assigneeCreateData) {
+	public AssigneeCreateInformation createAssignee(AssigneeCreateData assigneeCreateData) {
 		issueValidator.verifyCreateAssignee(assigneeCreateData.getIssueId(), assigneeCreateData.getMemberId());
-		assigneeRepository.save(assigneeCreateData.toAssignee());
+		return AssigneeCreateInformation.from(assigneeRepository.save(assigneeCreateData.toAssignee()));
 	}
 
 	@Transactional
