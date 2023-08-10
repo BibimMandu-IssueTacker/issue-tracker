@@ -237,7 +237,7 @@ public class MilestoneAcceptanceTest extends AcceptanceTest {
 		MilestoneCreateRequest milestoneCreateRequest) {
 		var findResponse = 열린_마일스톤_목록_조회_요청();
 		List<MilestoneResponse> milestoneResponse = findResponse.as(MilestonesResponse.class).getMilestones();
-		MilestoneResponse lastMilestoneResponse = milestoneResponse.get(milestoneResponse.size() - 1);
+		MilestoneResponse lastMilestoneResponse = milestoneResponse.get(0);
 
 		SoftAssertions softAssertions = new SoftAssertions();
 		softAssertions.assertThat(lastMilestoneResponse.getId()).isEqualTo(response.jsonPath().getLong("id"));
