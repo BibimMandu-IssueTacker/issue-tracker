@@ -1,9 +1,7 @@
 package com.issuetracker.issue.infrastrucure;
 
 import java.util.Map;
-import java.util.Optional;
 
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -22,7 +20,7 @@ import com.issuetracker.issue.domain.IssuesCountData;
 public class JdbcIssueRepository implements IssueRepository {
 
 	private static final String SAVE_SQL = "INSERT INTO issue(title, content, is_open, create_at, milestone_id, author_id) VALUES(:title, :content, :isOpen, :createAt, :milestoneId, :authorId)";
-	private static final String FIND_ALL_COUNT_SQL = "SELECT SUM(CASE WHEN is_open = 0 THEN 1 ELSE 0 END) AS issue_close_count, SUM(CASE WHEN is_open = 1 THEN 1 ELSE 0 END) AS issue_open_count, (SELECT COUNT(id) FROM label) AS label_count, (SELECT COUNT(id) FROM milestone) AS milestone_count FROM issue";
+	private static final String FIND_ALL_COUNT_SQL = "SELECT SUM(CASE WHEN is_open = 0 THEN 1 ELSE 0 END) AS issue_close_count, SUM(CASE WHEN is_open = 1 THEN 1 ELSE 0 END) AS issue_open_count, (SELECT COUNT(id) FROM label WHERE label.is_deleted = 0) AS label_count, (SELECT COUNT(id) FROM milestone WHERE milestone.is_deleted = 0) AS milestone_count FROM issue WHERE issue.is_deleted = 0";
 	private static final String UPDATE_IS_OPEN_SQL = "UPDATE issue SET is_open = :isOpen WHERE id = :id";
 	private static final String UPDATE_TITLE_SQL = "UPDATE issue SET title = :title WHERE id = :id";
 	private static final String UPDATE_CONTENT_SQL = "UPDATE issue SET content = :content WHERE id = :id";
