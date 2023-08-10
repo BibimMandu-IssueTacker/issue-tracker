@@ -3,6 +3,7 @@ package com.issuetracker.acceptance;
 import static com.issuetracker.util.steps.MilestoneSteps.*;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
@@ -115,7 +116,7 @@ public class MilestoneAcceptanceTest extends AcceptanceTest {
 	@Test
 	void 마일스톤을_수정한다() {
 		// given
-		Long milestoneId = 1L;
+		Long milestoneId = 2L;
 		MilestoneUpdateRequest milestoneUpdateRequest = new MilestoneUpdateRequest(
 			"수정된 마일스톤 제목",
 			"수정된 마일스톤 설명",
@@ -138,7 +139,7 @@ public class MilestoneAcceptanceTest extends AcceptanceTest {
 	@Test
 	void 마일스톤을_수정시_제목이_공백이면_400에러를_반환한다() {
 		// given
-		Long milestoneId = 1L;
+		Long milestoneId = 2L;
 		MilestoneUpdateRequest milestoneUpdateRequest = new MilestoneUpdateRequest(
 			"",
 			"수정된 마일스톤 설명",
@@ -160,7 +161,7 @@ public class MilestoneAcceptanceTest extends AcceptanceTest {
 	@Test
 	void 마일스톤을_수정시_마일스톤_설명은_없어도_마일스톤을_수정한다() {
 		// given
-		Long milestoneId = 1L;
+		Long milestoneId = 2L;
 		MilestoneUpdateRequest milestoneUpdateRequest = new MilestoneUpdateRequest(
 			"수정된 마일스톤 제목",
 			null,
@@ -183,7 +184,7 @@ public class MilestoneAcceptanceTest extends AcceptanceTest {
 	@Test
 	void 마일스톤을_수정시_데드라인_형식이_올바르지_않으면_400에러를_반환한다() {
 		// given
-		Long milestoneId = 1L;
+		Long milestoneId = 2L;
 		MilestoneUpdateRequest milestoneUpdateRequest = new MilestoneUpdateRequest(
 			"수정된 마일스톤 제목",
 			"수정된 마일스톤 설명",
@@ -205,7 +206,7 @@ public class MilestoneAcceptanceTest extends AcceptanceTest {
 	@Test
 	void 마일스톤을_삭제한다() {
 		// given
-		Long milestoneId = 1L;
+		Long milestoneId = 2L;
 
 		// when
 		var response = 마일스톤_삭제_요청(milestoneId);
@@ -234,7 +235,7 @@ public class MilestoneAcceptanceTest extends AcceptanceTest {
 
 	private void 마일스톤_목록_조회_시_생성된_마일스톤을_검증(ExtractableResponse<Response> response,
 		MilestoneCreateRequest milestoneCreateRequest) {
-		var findResponse = 마일스톤_목록_조회_요청();
+		var findResponse = 열린_마일스톤_목록_조회_요청();
 		List<MilestoneResponse> milestoneResponse = findResponse.as(MilestonesResponse.class).getMilestones();
 		MilestoneResponse lastMilestoneResponse = milestoneResponse.get(milestoneResponse.size() - 1);
 
@@ -250,9 +251,12 @@ public class MilestoneAcceptanceTest extends AcceptanceTest {
 
 	private void 마일스톤_목록_조회_시_수정된_마일스톤을_검증(ExtractableResponse<Response> response,
 		MilestoneUpdateRequest milestoneUpdateRequest, Long milestoneId) {
-		var findResponse = 마일스톤_목록_조회_요청();
+		var findResponse = 열린_마일스톤_목록_조회_요청();
 		List<MilestoneResponse> milestoneResponse = findResponse.as(MilestonesResponse.class).getMilestones();
-		MilestoneResponse lastMilestoneResponse = milestoneResponse.get(Long.valueOf(milestoneId - 1L).intValue());
+		MilestoneResponse lastMilestoneResponse = milestoneResponse.stream()
+			.filter(m -> Objects.equals(m.getId(), milestoneId))
+			.findAny()
+			.orElseThrow();
 
 		SoftAssertions softAssertions = new SoftAssertions();
 		softAssertions.assertThat(lastMilestoneResponse.getId()).isEqualTo(milestoneId);
@@ -265,7 +269,7 @@ public class MilestoneAcceptanceTest extends AcceptanceTest {
 	}
 
 	private void 마일스톤_목록_조회_시_삭제된_마일스톤을_검증(ExtractableResponse<Response> response, Long milestoneId) {
-		var findResponse = 마일스톤_목록_조회_요청();
+		var findResponse = 열린_마일스톤_목록_조회_요청();
 		List<MilestoneResponse> milestoneResponses = findResponse.as(MilestonesResponse.class).getMilestones();
 
 		for (MilestoneResponse milestoneResponse : milestoneResponses) {
