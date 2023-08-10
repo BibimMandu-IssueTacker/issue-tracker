@@ -37,6 +37,7 @@ public class JdbcMilestoneRepository implements MilestoneRepository {
 		+ "LEFT JOIN issue "
 		+ "ON milestone.id = issue.milestone_id "
 		+ "WHERE milestone.is_deleted = false "
+		+ "AND milestone.is_open = :isOpen "
 		+ "GROUP BY milestone.id";
 	private static final String FIND_ALL_ASSIGNED_TO_ISSUE
 		= "SELECT "
@@ -127,8 +128,8 @@ public class JdbcMilestoneRepository implements MilestoneRepository {
 	}
 
 	@Override
-	public List<Milestone> findAll() {
-		return jdbcTemplate.query(FIND_ALL_SQL, MILESTONE_ROW_MAPPER);
+	public List<Milestone> findAll(Milestone milestone) {
+		return jdbcTemplate.query(FIND_ALL_SQL, Map.of("isOpen", milestone.getIsOpen()), MILESTONE_ROW_MAPPER);
 	}
 
 	private static LocalDate convertFrom(String dateString) {
