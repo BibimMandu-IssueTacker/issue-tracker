@@ -14,6 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.issuetracker.milestone.domain.Milestone;
+import com.issuetracker.milestone.domain.MilestoneCountMetadata;
 import com.issuetracker.milestone.domain.MilestoneRepository;
 
 @Repository
@@ -63,6 +64,12 @@ public class JdbcMilestoneRepository implements MilestoneRepository {
 		+ "ON milestone.id = issue.milestone_id "
 		+ "WHERE milestone.id NOT IN (SELECT sub_issue.milestone_id FROM issue sub_issue WHERE sub_issue.id = :issueId) "
 		+ "GROUP BY milestone.id";
+	private static final String CALCULATE_COUNT_METADATA
+		= "SELECT "
+		+ "    (SELECT COUNT(id) FROM label WHERE is_deleted = false) AS total_label_count, "
+		+ "    (SELECT COUNT(id) FROM milestone WHERE is_deleted = false) AS total_milestone_count, "
+		+ "    (SELECT COUNT(id) FROM milestone WHERE is_deleted = false AND is_open = true) open_milestone_count, "
+		+ "    (SELECT COUNT(id) FROM milestone WHERE is_deleted = false AND is_open = false) close_milestone_count";
 
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -147,6 +154,11 @@ public class JdbcMilestoneRepository implements MilestoneRepository {
 		return jdbcTemplate.query(FIND_ALL_UNASSIGNED_TO_ISSUE, Map.of("issueId", issueId), MILESTONE_ROW_MAPPER);
 	}
 
+	@Override
+	public MilestoneCountMetadata calculateMetadata() {
+		return jdbcTemplate.queryForObject(CALCULATE_COUNT_METADATA, Map.of(), MILESTONE_METADATA_MAPPER);
+	}
+
 	private static final RowMapper<Milestone> MILESTONE_ROW_MAPPER = (rs, rowNum) ->
 		Milestone.builder()
 			.id(rs.getLong("id"))
@@ -155,5 +167,13 @@ public class JdbcMilestoneRepository implements MilestoneRepository {
 			.deadline(convertFrom(rs.getString("deadline")))
 			.isOpen(rs.getBoolean("is_open"))
 			.progress(rs.getInt("progress"))
+			.build();
+
+	private static final RowMapper<MilestoneCountMetadata> MILESTONE_METADATA_MAPPER = (rs, rowNum) ->
+		MilestoneCountMetadata.builder()
+			.totalLabelCount(rs.getInt("total_label_count"))
+			.totalMilestoneCount(rs.getInt("total_milestone_count"))
+			.openMilestoneCount(rs.getInt("open_milestone_count"))
+			.closeMilestoneCount(rs.getInt("close_milestone_count"))
 			.build();
 }

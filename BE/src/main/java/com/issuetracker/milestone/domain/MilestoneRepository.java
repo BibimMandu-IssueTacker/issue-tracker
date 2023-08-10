@@ -21,4 +21,6 @@ public interface MilestoneRepository {
 	List<Milestone> findAllAssignedToIssue(long issueId);
 
 	List<Milestone> findAllUnassignedToIssue(long issueId);
+
+	MilestoneCountMetadata calculateMetadata();
 }
