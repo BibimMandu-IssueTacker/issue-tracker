@@ -32,7 +32,7 @@ public class JdbcMilestoneRepository implements MilestoneRepository {
 		+ "    milestone.description, "
 		+ "    milestone.deadline, "
 		+ "    milestone.is_open, "
-		+ "    ROUND( COUNT( CASE WHEN issue.is_open = false THEN 1 ELSE null END ) / COUNT(issue.id) * 100, 2 ) AS progress "
+		+ "    COALESCE( ROUND( COUNT( CASE WHEN issue.is_open = false THEN 1 ELSE null END ) / COUNT(issue.id) * 100, 0 ), 0 ) AS progress "
 		+ "FROM milestone "
 		+ "LEFT JOIN issue "
 		+ "ON milestone.id = issue.milestone_id "
@@ -45,7 +45,7 @@ public class JdbcMilestoneRepository implements MilestoneRepository {
 		+ "    milestone.title, "
 		+ "    milestone.description, "
 		+ "    milestone.deadline, "
-		+ "    ROUND( COUNT( CASE WHEN issue.is_open = false THEN 1 ELSE null END ) / COUNT(issue.id) * 100, 2 ) AS progress "
+		+ "    COALESCE( ROUND( COUNT( CASE WHEN issue.is_open = false THEN 1 ELSE null END ) / COUNT(issue.id) * 100, 0 ), 0 ) AS progress "
 		+ "FROM milestone "
 		+ "RIGHT JOIN issue "
 		+ "ON milestone.id = issue.milestone_id "
@@ -57,7 +57,7 @@ public class JdbcMilestoneRepository implements MilestoneRepository {
 		+ "    milestone.title, "
 		+ "    milestone.description, "
 		+ "    milestone.deadline, "
-		+ "    ROUND( COUNT( CASE WHEN issue.is_open = false THEN 1 ELSE null END ) / COUNT(issue.id) * 100, 2 ) AS progress "
+		+ "    COALESCE( ROUND( COUNT( CASE WHEN issue.is_open = false THEN 1 ELSE null END ) / COUNT(issue.id) * 100, 0 ), 0 ) AS progress "
 		+ "FROM milestone "
 		+ "LEFT JOIN issue "
 		+ "ON milestone.id = issue.milestone_id "
@@ -154,6 +154,6 @@ public class JdbcMilestoneRepository implements MilestoneRepository {
 			.description(rs.getString("description"))
 			.deadline(convertFrom(rs.getString("deadline")))
 			.isOpen(rs.getBoolean("is_open"))
-			.progress(rs.getDouble("progress"))
+			.progress(rs.getInt("progress"))
 			.build();
 }
