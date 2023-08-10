@@ -26,7 +26,7 @@ public class JdbcIssueRepository implements IssueRepository {
 	private static final String UPDATE_CONTENT_SQL = "UPDATE issue SET content = :content WHERE id = :id";
 	private static final String UPDATE_MILESTONE_SQL = "UPDATE issue SET milestone_id = :milestoneId WHERE id = :id";
 	private static final String DELETE_SQL = "UPDATE issue SET is_deleted = true WHERE id = :id";
-	private static final String EXIST_BY_ID_SQL = "SELECT EXISTS(SELECT 1 FROM issue WHERE id = :id)";
+	private static final String EXIST_BY_ID_SQL = "SELECT EXISTS(SELECT 1 FROM issue WHERE id = :id AND is_deleted = false)";
 
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
