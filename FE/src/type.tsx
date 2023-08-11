@@ -28,6 +28,11 @@ export type Milestone = {
   progress: number;
 };
 
+export type DropdownMilestone = {
+  id: number;
+  title: string;
+};
+
 export type IssueListProps = {
   id: number;
   title: string;
@@ -56,10 +61,14 @@ export type AssigneesList = {
 };
 
 export type AssigneesProps = {
-  assignees: AssigneesList[] | [];
+  assignees: AssigneesList[] | null;
 };
 
 export type FetchedLabels = {
+  metadata: {
+    totalLabelCount: number;
+    totalMilestoneCount: number;
+  };
   labels: Label[] | null;
 };
 
@@ -86,3 +95,21 @@ export type FetchedDetail = {
   milestone: Milestone | null;
   comments: Comment[] | null;
 };
+
+export type FetchedMilestone = {
+  metadata: {
+    totalLabelCount: number;
+    totalMilestoneCount: number;
+    openMilestoneCount: number;
+    closeMilestoneCount: number;
+  };
+  milestones: MilestoneData[] | null;
+};
+
+export interface MilestoneData extends Milestone {
+  deadline: string;
+  isOpen: boolean;
+  description: string;
+  openIssueCount: number;
+  closeIssueCount: number;
+}
