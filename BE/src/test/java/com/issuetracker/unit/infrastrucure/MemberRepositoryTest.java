@@ -71,4 +71,21 @@ class MemberRepositoryTest {
 			() -> assertThat(actual.getProfileImageUrl()).isEqualTo(MEMBER1.getProFileImageUrl())
 		);
 	}
+
+	@Test
+	void 회원을_수정하다() {
+		// given
+		Member member = Member.builder()
+			.id(MEMBER1.getId())
+			.nickname("mandu")
+			.password("test")
+			.profileImageUrl("http://image.com")
+			.build();
+
+		// when
+		int actual = memberRepository.update(member);
+
+		// then
+		assertThat(actual).isEqualTo(1);
+	}
 }

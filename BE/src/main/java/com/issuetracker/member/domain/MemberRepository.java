@@ -12,4 +12,6 @@ public interface MemberRepository {
 	List<Member> search();
 
 	Optional<Member> findById(Long id);
+
+	int update(Member member);
 }
