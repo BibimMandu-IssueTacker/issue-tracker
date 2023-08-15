@@ -2,7 +2,9 @@ package com.issuetracker.member.infrastructure;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -19,6 +21,7 @@ public class JdbcMemberRepository implements MemberRepository {
 	private static final String EXIST_BY_ID_SQL = "SELECT EXISTS(SELECT 1 FROM member WHERE id = :id)";
 	private static final String EXIST_BY_IDS_SQL = "SELECT IF(COUNT(id) = :size, TRUE, FALSE) FROM member WHERE id IN(:memberIds)";
 	private static final String SEARCH_SQL = "SELECT DISTINCT member.id, member.nickname, member.profile_image_url FROM issue JOIN member ON issue.author_id = member.id";
+	private static final String FIND_BY_ID_SQL = "SELECT id, nickname, profile_image_url FROM member WHERE id = :id";
 
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -42,6 +45,12 @@ public class JdbcMemberRepository implements MemberRepository {
 	@Override
 	public List<Member> search() {
 		return jdbcTemplate.query(SEARCH_SQL, AUTHOR_ROW_MAPPER);
+	}
+
+	@Override
+	public Optional<Member> findById(Long id) {
+		List<Member> members = jdbcTemplate.query(FIND_BY_ID_SQL, Map.of("id", id), AUTHOR_ROW_MAPPER);
+		return Optional.ofNullable(DataAccessUtils.singleResult(members));
 	}
 
 	private static final RowMapper<Member> AUTHOR_ROW_MAPPER = (rs, rowNum) ->
