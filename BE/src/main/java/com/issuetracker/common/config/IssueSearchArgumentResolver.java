@@ -20,6 +20,12 @@ import com.issuetracker.issue.ui.dto.IssueSearchRequest;
 
 @Component
 public class IssueSearchArgumentResolver implements HandlerMethodArgumentResolver {
+
+	private static final List<String> ISSUE_SEARCH_REQUEST_VARIABLE_NAMES =
+		Arrays.stream(IssueSearchRequest.class.getDeclaredFields())
+			.map(Field::getName)
+			.collect(Collectors.toUnmodifiableList());
+
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
 		return IssueSearchRequest.class.isAssignableFrom(parameter.getParameterType());
@@ -28,46 +34,50 @@ public class IssueSearchArgumentResolver implements HandlerMethodArgumentResolve
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
 		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-		List<String> issueSearchRequestVariableNames = Arrays.stream(IssueSearchRequest.class.getDeclaredFields())
-			.map(Field::getName)
-			.collect(Collectors.toUnmodifiableList());
-
-		webRequest.getParameterMap()
-			.keySet()
-			.forEach(parameterName -> {
-				if (issueSearchRequestVariableNames.stream()
-					.noneMatch(variableName -> variableName.equals(parameterName))) {
-					throw new CustomHttpException(ErrorType.QUERY_STRING_KEY_NOT_MATCH);
-				}
-		});
+		validateQueryStringNotMatch(webRequest);
 
 		String isOpen = webRequest.getParameter("isOpen");
 		return new IssueSearchRequest(
 			Objects.isNull(isOpen) ? null : Boolean.valueOf(isOpen),
-			converterListLong(webRequest.getParameterValues("assigneeIds")),
-			converterListLong(webRequest.getParameterValues("labelIds")),
-			converterLong(webRequest.getParameter("milestoneId")),
-			converterLong(webRequest.getParameter("authorId")),
+			converterToListLong(webRequest.getParameterValues("assigneeIds")),
+			converterToListLong(webRequest.getParameterValues("labelIds")),
+			converterToLong(webRequest.getParameter("milestoneId")),
+			converterToLong(webRequest.getParameter("authorId")),
 			Boolean.valueOf(webRequest.getParameter("isCommentedByMe"))
 		);
 	}
 
-	private List<Long> converterListLong(String[] strings) {
+	private static void validateQueryStringNotMatch(NativeWebRequest webRequest) {
+		webRequest.getParameterMap()
+			.keySet()
+			.forEach(parameterName -> {
+				if (ISSUE_SEARCH_REQUEST_VARIABLE_NAMES.stream()
+					.noneMatch(variableName -> variableName.equals(parameterName))) {
+					throw new CustomHttpException(ErrorType.QUERY_STRING_KEY_NOT_MATCH);
+				}
+		});
+	}
+
+	private List<Long> converterToListLong(String[] strings) {
 		if (strings == null || Arrays.stream(strings).allMatch(s -> s.equals(""))) {
 			return Collections.emptyList();
 		}
 
 		return Arrays.stream(strings)
-			.map(this::converterLong)
+			.map(this::converterToLong)
 			.filter(Objects::nonNull)
 			.collect(Collectors.toList());
 	}
 
-	private Long converterLong(String parameter) {
-		if (parameter == null || parameter.equals("")) {
-			return null;
-		}
+	private Long converterToLong(String parameter) {
+		try{
+			if (parameter == null || parameter.equals("")) {
+				return null;
+			}
 
-		return Long.valueOf(parameter);
+			return Long.valueOf(parameter);
+		} catch (NumberFormatException e) {
+			throw new CustomHttpException(ErrorType.QUERY_STRING_VALUE_NOT_MATCH);
+		}
 	}
 }
