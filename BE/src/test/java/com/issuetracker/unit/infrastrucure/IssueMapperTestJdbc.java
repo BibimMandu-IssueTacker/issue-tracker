@@ -1,6 +1,5 @@
 package com.issuetracker.unit.infrastrucure;
 
-import static com.issuetracker.util.fixture.IssueFixture.ISSUE1;
 import static com.issuetracker.util.fixture.IssueFixture.ISSUE2;
 import static com.issuetracker.util.fixture.LabelFixture.LABEL1;
 import static com.issuetracker.util.fixture.LabelFixture.LABEL5;
@@ -14,7 +13,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,29 +21,20 @@ import com.issuetracker.issue.domain.IssueDetailRead;
 import com.issuetracker.issue.domain.IssueMapper;
 import com.issuetracker.issue.domain.IssueRead;
 import com.issuetracker.issue.domain.IssueSearch;
-import com.issuetracker.util.DatabaseInitialization;
-import com.issuetracker.util.MyBatisMapperTest;
+import com.issuetracker.util.JdbcRepositoryTest;
+import com.issuetracker.util.MyBatisRepositoryTest;
 import com.issuetracker.util.fixture.IssueCommentFixture;
 import com.issuetracker.util.fixture.LabelFixture;
 import com.issuetracker.util.fixture.MemberFixture;
 
-@MyBatisMapperTest
-public class IssueMapperTest {
+public class IssueMapperTestJdbc extends MyBatisRepositoryTest {
 
 	@Autowired
 	private IssueMapper issueMapper;
 
-	private DatabaseInitialization databaseInitialization;
-
 	@Autowired
-	public IssueMapperTest(JdbcTemplate jdbcTemplate) {
-		this.databaseInitialization = new DatabaseInitialization(jdbcTemplate);
-	}
-
-	@BeforeEach
-	void setUp() {
-		databaseInitialization.initialization();
-		databaseInitialization.loadData();
+	public IssueMapperTestJdbc(JdbcTemplate jdbcTemplate) {
+		super(jdbcTemplate);
 	}
 
 	@Test
