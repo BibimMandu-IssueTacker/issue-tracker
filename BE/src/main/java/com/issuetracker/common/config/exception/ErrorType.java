@@ -25,7 +25,8 @@ public enum ErrorType {
 	ASSIGNEE_DUPLICATION(HttpStatus.BAD_REQUEST, "이미 등록된 담당자입니다."),
 	ASSIGNED_LABEL_DUPLICATION(HttpStatus.BAD_REQUEST, "이미 등록된 라벨입니다."),
 	QUERY_STRING_VALUE_NOT_MATCH(HttpStatus.BAD_REQUEST, "올바른 QueryString Value가 아닙니다."),
-	MILESTONE_TITLE_DUPLICATION(HttpStatus.BAD_REQUEST, "이미 등록된 제목입니다.");
+	MILESTONE_TITLE_DUPLICATION(HttpStatus.BAD_REQUEST, "이미 등록된 제목입니다."),
+	LABEL_TITLE_DUPLICATION(HttpStatus.BAD_REQUEST, "이미 등록된 제목입니다." );
 
 	private final HttpStatus status;
 	private final String message;
