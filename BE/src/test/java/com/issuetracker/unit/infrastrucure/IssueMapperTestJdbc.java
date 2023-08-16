@@ -21,7 +21,6 @@ import com.issuetracker.issue.domain.IssueDetailRead;
 import com.issuetracker.issue.domain.IssueMapper;
 import com.issuetracker.issue.domain.IssueRead;
 import com.issuetracker.issue.domain.IssueSearch;
-import com.issuetracker.util.JdbcRepositoryTest;
 import com.issuetracker.util.MyBatisRepositoryTest;
 import com.issuetracker.util.fixture.IssueCommentFixture;
 import com.issuetracker.util.fixture.LabelFixture;
@@ -42,12 +41,12 @@ public class IssueMapperTestJdbc extends MyBatisRepositoryTest {
 		// given
 		IssueSearch issueSearch = IssueSearch.builder()
 			.isOpen(true)
-			.assigneeIds(Collections.emptyList())
-			.labelIds(List.of(LABEL5.getId()))
-			.milestoneId(MILESTON1.getId())
-			.authorId(MEMBER1.getId())
-			.commentAuthorId(null)
+			.assigneeNames(Collections.emptyList())
+			.labelTitles(List.of(LABEL5.getTitle()))
+			.milestoneTitle(MILESTON1.getTitle())
+			.authorName(MEMBER1.getNickname())
 			.build();
+
 
 		// when
 		List<IssueRead> actual = issueMapper.search(issueSearch);
@@ -61,11 +60,10 @@ public class IssueMapperTestJdbc extends MyBatisRepositoryTest {
 		// given
 		IssueSearch issueSearch = IssueSearch.builder()
 			.isOpen(false)
-			.assigneeIds(Collections.emptyList())
-			.labelIds(List.of(LABEL1.getId()))
-			.milestoneId(MILESTON3.getId())
-			.authorId(MEMBER4.getId())
-			.commentAuthorId(null)
+			.assigneeNames(Collections.emptyList())
+			.labelTitles(List.of(LABEL1.getTitle()))
+			.milestoneTitle(MILESTON3.getTitle())
+			.authorName(MEMBER4.getNickname())
 			.build();
 
 		// when

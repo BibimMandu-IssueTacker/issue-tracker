@@ -1,8 +1,9 @@
 package com.issuetracker.common.config;
 
+import static com.issuetracker.common.util.ConvertorUtil.converterToNotBlankList;
+
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -39,11 +40,12 @@ public class IssueSearchArgumentResolver implements HandlerMethodArgumentResolve
 		String isOpen = webRequest.getParameter("isOpen");
 		return new IssueSearchRequest(
 			Objects.isNull(isOpen) ? null : Boolean.valueOf(isOpen),
-			converterToListLong(webRequest.getParameterValues("assigneeIds")),
-			converterToListLong(webRequest.getParameterValues("labelIds")),
-			converterToLong(webRequest.getParameter("milestoneId")),
-			converterToLong(webRequest.getParameter("authorId")),
-			Boolean.valueOf(webRequest.getParameter("isCommentedByMe"))
+			converterToNotBlankList(webRequest.getParameterValues("assigneeNames")),
+			converterToNotBlankList(webRequest.getParameterValues("labelTitles")),
+			webRequest.getParameter("milestoneTitle"),
+			webRequest.getParameter("authorName"),
+			Boolean.valueOf(webRequest.getParameter("isCommentedByMe")),
+			converterToNotBlankList(webRequest.getParameterValues("no"))
 		);
 	}
 
@@ -55,29 +57,6 @@ public class IssueSearchArgumentResolver implements HandlerMethodArgumentResolve
 					.noneMatch(variableName -> variableName.equals(parameterName))) {
 					throw new CustomHttpException(ErrorType.QUERY_STRING_KEY_NOT_MATCH);
 				}
-		});
-	}
-
-	private List<Long> converterToListLong(String[] strings) {
-		if (strings == null || Arrays.stream(strings).allMatch(s -> s.equals(""))) {
-			return Collections.emptyList();
-		}
-
-		return Arrays.stream(strings)
-			.map(this::converterToLong)
-			.filter(Objects::nonNull)
-			.collect(Collectors.toList());
-	}
-
-	private Long converterToLong(String parameter) {
-		try{
-			if (parameter == null || parameter.equals("")) {
-				return null;
-			}
-
-			return Long.valueOf(parameter);
-		} catch (NumberFormatException e) {
-			throw new CustomHttpException(ErrorType.QUERY_STRING_VALUE_NOT_MATCH);
-		}
+			});
 	}
 }

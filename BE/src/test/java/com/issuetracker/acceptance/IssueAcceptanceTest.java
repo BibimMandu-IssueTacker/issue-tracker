@@ -8,7 +8,6 @@ import static com.issuetracker.util.fixture.LabelFixture.LABEL4;
 import static com.issuetracker.util.fixture.LabelFixture.LABEL7;
 import static com.issuetracker.util.fixture.MemberFixture.MEMBER1;
 import static com.issuetracker.util.fixture.MemberFixture.MEMBER2;
-import static com.issuetracker.util.fixture.MemberFixture.MEMBER3;
 import static com.issuetracker.util.fixture.MemberFixture.MEMBER4;
 import static com.issuetracker.util.fixture.MilestoneFixture.MILESTON1;
 import static com.issuetracker.util.fixture.MilestoneFixture.MILESTON2;
@@ -71,7 +70,7 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 	 */
 	@ParameterizedTest
 	@MethodSource("providerIssueSearchRequest")
-	void 이슈를_목록을_조회한다(IssueSearchRequest issueSearchRequest) {
+	void 이슈_목록을_조회한다(IssueSearchRequest issueSearchRequest) {
 		// when
 		var response = 이슈_목록_조회_요청(issueSearchRequest);
 
@@ -90,11 +89,12 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 		// when
 		var issueSearchRequest = new IssueSearchRequest(
 			false,
-			List.of(MEMBER4.getId()),
-			List.of(LABEL1.getId(), LABEL2.getId()),
-			MILESTON4.getId(),
-			MEMBER1.getId(),
-			true
+			List.of(MEMBER4.getNickname()),
+			List.of(LABEL1.getTitle(), LABEL2.getTitle()),
+			MILESTON4.getTitle(),
+			MEMBER1.getNickname(),
+			true,
+			null
 		);
 		var response = 이슈_목록_조회_요청(issueSearchRequest);
 
@@ -498,29 +498,32 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 			Arguments.of(
 				new IssueSearchRequest(
 					true,
-					List.of(MEMBER2.getId(), MEMBER3.getId()),
-					List.of(LABEL4.getId(), LABEL7.getId()),
-					MILESTON2.getId(),
-					MEMBER4.getId(),
+					null,
+					List.of(LABEL4.getTitle(), LABEL7.getTitle()),
+					MILESTON1.getTitle(),
+					MEMBER2.getNickname(),
+					true,
 					null)
 			),
 			Arguments.of(
 				new IssueSearchRequest(
-					true,
 					null,
-					List.of(LABEL4.getId(), LABEL7.getId()),
-					MILESTON1.getId(),
-					MEMBER2.getId(),
-					true)
+					null,
+					null,
+					MILESTON1.getTitle(),
+					MEMBER2.getNickname(),
+					true,
+					null)
 			),
 			Arguments.of(
 				new IssueSearchRequest(
 					null,
 					null,
 					null,
-					MILESTON1.getId(),
-					MEMBER2.getId(),
-					true)
+					null,
+					null,
+					null,
+					null)
 			)
 		);
 	}
@@ -571,9 +574,9 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 			assertThat(isOpens).containsOnly(issueSearchRequest.getIsOpen());
 		}
 
-		if (issueSearchRequest.getLabelIds() != null) {
+		if (issueSearchRequest.getLabelTitles() != null) {
 			List<String> labelTitles = response.jsonPath().getList("issues.labels.title", String.class);
-			List<String> expectedTitles = LabelFixture.findAllById(issueSearchRequest.getLabelIds())
+			List<String> expectedTitles = LabelFixture.findAllByTitles(issueSearchRequest.getLabelTitles())
 				.stream()
 				.map(LabelFixture::getTitle)
 				.collect(Collectors.toUnmodifiableList());
@@ -581,18 +584,29 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 			assertThat(labelTitles).containsOnly(expectedTitles.toString());
 		}
 
-		if (issueSearchRequest.getAuthorId() != null) {
+		if (issueSearchRequest.getAuthorName() != null) {
 			List<String> authorNickname = response.jsonPath().getList("issues.author", String.class);
-			MemberFixture findMember = MemberFixture.findById(issueSearchRequest.getAuthorId());
+			MemberFixture findMember = MemberFixture.findByNickname(issueSearchRequest.getAuthorName());
 
 			assertThat(authorNickname).containsOnly(findMember.getNickname());
 		}
 
-		if (issueSearchRequest.getMilestoneId() != null) {
+		if (issueSearchRequest.getMilestoneTitle() != null) {
 			List<String> milestoneTitles = response.jsonPath().getList("issues.milestone.title", String.class);
-			MilestoneFixture findMilestone = MilestoneFixture.findById(issueSearchRequest.getMilestoneId());
+			MilestoneFixture findMilestone = MilestoneFixture.findByTitle(issueSearchRequest.getMilestoneTitle());
 
 			assertThat(milestoneTitles).containsOnly(findMilestone.getTitle());
+		}
+
+		if (issueSearchRequest.getAssigneeNames() != null) {
+			List<String> assigneeNicknames = response.jsonPath().getList("issues.assignees.nickname", String.class);
+
+			List<String> expectedNicknames = MemberFixture.findAllByNickname(issueSearchRequest.getAssigneeNames())
+				.stream()
+				.map(MemberFixture::getNickname)
+				.collect(Collectors.toUnmodifiableList());
+
+			assertThat(assigneeNicknames).containsOnly(expectedNicknames.toString());
 		}
 	}
 
@@ -603,7 +617,7 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 	}
 
 	private void 이슈_목록_조회_시_생성된_이슈를_검증(ExtractableResponse<Response> response, IssueCreateRequest issueCreateRequest) {
-		var findResponse =  이슈_목록_조회_요청(new IssueSearchRequest(true, null, null, null, null, null));
+		var findResponse =  이슈_목록_조회_요청(new IssueSearchRequest(true, null, null, null, null, null, null));
 		List<IssueSearchResponse> issueSearchResponses = findResponse.as(IssuesSearchResponse.class).getIssues();
 		IssueSearchResponse lastIssueSearchResponse = issueSearchResponses.get(0);
 
