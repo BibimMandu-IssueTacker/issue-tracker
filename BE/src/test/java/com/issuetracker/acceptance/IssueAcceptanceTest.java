@@ -13,6 +13,7 @@ import static com.issuetracker.util.fixture.MemberFixture.MEMBER4;
 import static com.issuetracker.util.fixture.MilestoneFixture.MILESTON1;
 import static com.issuetracker.util.fixture.MilestoneFixture.MILESTON2;
 import static com.issuetracker.util.fixture.MilestoneFixture.MILESTON4;
+import static com.issuetracker.util.steps.IssueSteps.마일스톤_목록_조회_요청;
 import static com.issuetracker.util.steps.IssueSteps.이슈_내용_수정_요청;
 import static com.issuetracker.util.steps.IssueSteps.이슈_마일스톤_수정_요청;
 import static com.issuetracker.util.steps.IssueSteps.이슈_목록_조회_요청;
@@ -22,7 +23,7 @@ import static com.issuetracker.util.steps.IssueSteps.이슈_열림_닫힘_수정
 import static com.issuetracker.util.steps.IssueSteps.이슈_열림_닫힘_일괄_수정_요쳥;
 import static com.issuetracker.util.steps.IssueSteps.이슈_작성_요청;
 import static com.issuetracker.util.steps.IssueSteps.이슈_제목_수정_요청;
-import static org.assertj.core.api.Assertions.as;
+import static com.issuetracker.util.steps.IssueSteps.작성자_목록_조회_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
@@ -49,6 +50,8 @@ import com.issuetracker.issue.ui.dto.IssueDetailResponse;
 import com.issuetracker.issue.ui.dto.IssueSearchRequest;
 import com.issuetracker.issue.ui.dto.IssueSearchResponse;
 import com.issuetracker.issue.ui.dto.IssuesSearchResponse;
+import com.issuetracker.issue.ui.dto.assignee.AuthorResponses;
+import com.issuetracker.milestone.ui.dto.MilestonesSearchResponse;
 import com.issuetracker.util.AcceptanceTest;
 import com.issuetracker.util.fixture.IssueCommentFixture;
 import com.issuetracker.util.fixture.IssueFixture;
@@ -462,6 +465,34 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 		이슈_상세_조회에서_삭제_되었는지_검증(ISSUE1.getId());
 	}
 
+	/**
+	 * When 마일스톤 목록을 조회하면
+	 * Then 마일스톤 목록을 반환한다.
+	 */
+	@Test
+	void 마일스톤_목록을_조회한다() {
+		// when
+		var response = 마일스톤_목록_조회_요청();
+
+		// then
+		응답_상태코드_검증(response, HttpStatus.OK);
+		마일스톤_목록_검증(response);
+	}
+
+	/**
+	 * When 작성자 목록을 조회하면
+	 * Then 작성자 목록을 반환한다.
+	 */
+	@Test
+	void 작성자_목록을_조회한다() {
+		// when
+		var response = 작성자_목록_조회_요청();
+
+		// then
+		응답_상태코드_검증(response, HttpStatus.OK);
+		작성자_목록_검증(response);
+	}
+
 	private static Stream<Arguments> providerIssueSearchRequest() {
 		return Stream.of(
 			Arguments.of(
@@ -637,5 +668,19 @@ public class IssueAcceptanceTest extends AcceptanceTest {
 
 		assertThat(result).isTrue();
 		assertThat(issues.get(0).getIsOpen()).isEqualTo(isOpen);
+	}
+
+	private void 마일스톤_목록_검증(ExtractableResponse<Response> response) {
+		var findResponse = 마일스톤_목록_조회_요청();
+		MilestonesSearchResponse milestonesSearchResponse = findResponse.as(MilestonesSearchResponse.class);
+
+		assertThat(milestonesSearchResponse.getMilestones()).isNotEmpty();
+	}
+
+	private void 작성자_목록_검증(ExtractableResponse<Response> response) {
+		var findResponse = 작성자_목록_조회_요청();
+		AuthorResponses authorResponses = findResponse.as(AuthorResponses.class);
+
+		assertThat(authorResponses.getAuthors()).isNotEmpty();
 	}
 }
