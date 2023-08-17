@@ -21,7 +21,7 @@ public class JdbcMemberRepository implements MemberRepository {
 
 	private static final String EXIST_BY_ID_SQL = "SELECT EXISTS(SELECT 1 FROM member WHERE id = :id)";
 	private static final String EXIST_BY_IDS_SQL = "SELECT IF(COUNT(id) = :size, TRUE, FALSE) FROM member WHERE id IN(:memberIds)";
-	private static final String SEARCH_SQL = "SELECT DISTINCT member.id, member.nickname, member.profile_image_url FROM issue JOIN member ON issue.author_id = member.id";
+	private static final String SEARCH_SQL = "SELECT id, nickname, profile_image_url FROM member ORDER BY nickname";
 	private static final String FIND_BY_ID_SQL = "SELECT id, nickname, profile_image_url FROM member WHERE id = :id";
 	private static final String UPDATE_MEMBER_SQL = "UPDATE member SET nickname =:nickname, password = :password, profile_image_url = :profileImageUrl WHERE id =:id";
 

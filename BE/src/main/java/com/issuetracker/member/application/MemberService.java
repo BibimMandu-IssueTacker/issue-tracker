@@ -25,7 +25,7 @@ public class MemberService {
 	private final MemberRepository memberRepository;
 	private final FileService fileService;
 
-	public List<MemberInformation> searchAuthors() {
+	public List<MemberInformation> searchMember() {
 		return MemberInformation.from(memberRepository.search());
 	}
 

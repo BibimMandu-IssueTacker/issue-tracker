@@ -26,6 +26,7 @@ public class JdbcLabelRepository implements LabelRepository {
 	private static final String UPDATE_SQL = "UPDATE label SET title = :title, description = :description, color = :color WHERE id = :id";
 	private static final String DELETE_SQL = "UPDATE label SET is_deleted = true WHERE id = :id";
 	private static final String FIND_ALL_SQL = "SELECT id, title, description, color FROM label WHERE is_deleted = false ORDER BY id desc";
+	private static final String FIND_ALL_SEARCH_SQL = "SELECT id, title, color, description FROM label WHERE label.is_deleted = 0 ORDER BY title";
 	private static final String CALCULATE_COUNT_METADATA
 		= "SELECT "
 		+ "    (SELECT COUNT(id) FROM label WHERE is_deleted = false) AS total_label_count, "
@@ -88,6 +89,11 @@ public class JdbcLabelRepository implements LabelRepository {
 	@Override
 	public List<Label> findAll() {
 		return jdbcTemplate.query(FIND_ALL_SQL, LABEL_ROW_MAPPER);
+	}
+
+	@Override
+	public List<Label> searchOrderByTitle() {
+		return jdbcTemplate.query(FIND_ALL_SEARCH_SQL, LABEL_ROW_MAPPER);
 	}
 
 	@Override
