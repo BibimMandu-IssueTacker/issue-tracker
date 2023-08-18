@@ -4,18 +4,26 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { FetchedLabels } from "../type";
 import LabelList from "../components/LabelList/LabelList";
-import Alert from "../components/Alert/Alert";
 import EditLabel from "../components/LabelList/EditLabel";
 import { generateRandomHex } from "../utils/generateRandomHex";
+import LoadingIndicator from "../components/LoadingIndicator/LoadingIndicator";
+import Header from "../components/Header/Header";
+import { useAuth } from "../context/AuthContext";
 
-export default function LabelsPage() {
+type Props = {
+  toggleTheme(): void;
+};
+
+export default function LabelsPage({ toggleTheme }: Props) {
   const navigate = useNavigate();
-  const [data, setData] = useState<FetchedLabels | null>(null);
-  const [openDeleteAlert, setOpenDeleteAlert] = useState<boolean>(false);
+  const { profile } = useAuth();
+  const [data, setData] = useState<FetchedLabels>();
   const [openAdd, setOpenAdd] = useState<boolean>(false);
   const [addLabelName, setAddLabelName] = useState<string>("");
   const [addLabelDescription, setAddLabelDescription] = useState<string>("");
-  const [addLabelColor, setAddLabelColor] = useState<string>("#FFFFFF");
+  const [backgroundColor, setBackgroundColor] = useState<string>("#FFFFFF");
+  const [labelTextColor, setLabelTextColor] = useState<string>("#14142B");
+
   const goLabelsPage = () => {
     navigate("/labels");
   };
@@ -24,20 +32,16 @@ export default function LabelsPage() {
     navigate("/milestones/isOpen=true");
   };
 
-  const openDelete = () => {
-    setOpenDeleteAlert(true);
-  };
-
-  const closeDelete = () => {
-    setOpenDeleteAlert(false);
-  };
-
   const openAddLabel = () => {
     setOpenAdd(true);
   };
 
   const closeAddLabel = () => {
     setOpenAdd(false);
+  };
+
+  const changeTextColor = (color: string) => {
+    setLabelTextColor(color);
   };
 
   const handleNameInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,24 +53,26 @@ export default function LabelsPage() {
   };
 
   const handleColorInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAddLabelColor(e.target.value);
+    setBackgroundColor(e.target.value);
   };
 
   const randomColor = () => {
-    setAddLabelColor(generateRandomHex());
+    setBackgroundColor(generateRandomHex());
   };
 
   const createLabel = async () => {
     const URL = "http://3.34.141.196/api/labels";
 
+    const headers = new Headers();
+    const accessToken = localStorage.getItem("accessToken");
+    headers.append("Authorization", `Bearer ${accessToken}`);
+    headers.append("Content-Type", "application/json");
+
     const data = {
       title: addLabelName,
       description: addLabelDescription,
-      color: addLabelColor,
-    };
-
-    const headers = {
-      "Content-Type": "application/json",
+      backgroundColor: backgroundColor,
+      textColor: labelTextColor,
     };
 
     try {
@@ -90,7 +96,12 @@ export default function LabelsPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://3.34.141.196/api/labels");
+        const headers = new Headers();
+        const accessToken = localStorage.getItem("accessToken");
+        headers.append("Authorization", `Bearer ${accessToken}`);
+        const response = await fetch("http://3.34.141.196/api/labels", {
+          headers,
+        });
         if (!response.ok) {
           throw new Error("데이터를 가져오는 데 실패했습니다.");
         }
@@ -105,83 +116,100 @@ export default function LabelsPage() {
   }, []);
 
   return (
-    <Main>
-      <Tap>
-        <TapButtonWrapper>
-          <Button
-            icon={"label"}
-            label={`레이블(${data?.metadata.totalLabelCount})`}
-            type={"ghost"}
-            size={"medium"}
-            width={"50%"}
-            onClick={goLabelsPage}
-          />
-          <Button
-            icon={"milestone"}
-            label={`마일스톤(${data?.metadata.totalMilestoneCount})`}
-            type={"ghost"}
-            size={"medium"}
-            width={"50%"}
-            onClick={goMilestonesPage}
-          />
-        </TapButtonWrapper>
-        <Button
-          icon={"plus"}
-          label={"레이블 추가"}
-          onClick={openAddLabel}
-          disabled={openAdd}
-        />
-      </Tap>
-      {openAdd && (
-        <EditLabel
-          type={"add"}
-          title={"새로운 레이블 추가"}
-          name={addLabelName}
-          description={addLabelDescription}
-          color={addLabelColor}
-          onChangeName={handleNameInputChange}
-          onChangeDescrip={handleDescripInputChange}
-          onChangeColor={handleColorInputChange}
-          randomColor={randomColor}
-          cancelEdit={closeAddLabel}
-          confirmEdit={createLabel}
-        />
-      )}
-      <LabelsTable>
-        <TableHeader>
-          <LabelCounter>{data?.labels?.length}개의 레이블</LabelCounter>
-        </TableHeader>
-        {data?.labels?.map((label) => (
-          <LabelList
-            key={label.id}
-            id={label.id}
-            title={label.title}
-            color={label.color}
-            description={label.description}
-            openDelete={openDelete}
-          />
-        ))}
-        {data?.labels?.length === 0 && (
-          <EmptyList>
-            <EmptyContent>생성된 레이블이 없습니다.</EmptyContent>
-          </EmptyList>
+    <>
+      <Header
+        toggleTheme={toggleTheme}
+        profileImg={profile ? profile.profileImageUri : "/icons/user.png"}
+      />
+      <Main>
+        {!data && (
+          <LoadingPage>
+            <LoadingIndicator />
+          </LoadingPage>
         )}
-      </LabelsTable>
-      {openDeleteAlert && (
-        <Dim>
-          <Alert onClickCancel={closeDelete} onClickActive={() => {}} />
-        </Dim>
-      )}
-    </Main>
+        {data && (
+          <Container>
+            <Tap>
+              <TapButtonWrapper>
+                <Button
+                  icon={"label"}
+                  label={`레이블(${data?.metadata.totalLabelCount})`}
+                  type={"ghost"}
+                  size={"medium"}
+                  width={"50%"}
+                  onClick={goLabelsPage}
+                />
+                <Button
+                  icon={"milestone"}
+                  label={`마일스톤(${data?.metadata.totalMilestoneCount})`}
+                  type={"ghost"}
+                  size={"medium"}
+                  width={"50%"}
+                  onClick={goMilestonesPage}
+                />
+              </TapButtonWrapper>
+              <Button
+                icon={"plus"}
+                label={"레이블 추가"}
+                onClick={openAddLabel}
+                disabled={openAdd}
+              />
+            </Tap>
+            {openAdd && (
+              <EditLabel
+                type={"add"}
+                title={"새로운 레이블 추가"}
+                name={addLabelName}
+                description={addLabelDescription}
+                backgroundColor={backgroundColor}
+                textColor={labelTextColor}
+                onChangeName={handleNameInputChange}
+                onChangeDescrip={handleDescripInputChange}
+                onChangeColor={handleColorInputChange}
+                randomColor={randomColor}
+                cancelEdit={closeAddLabel}
+                confirmEdit={createLabel}
+                changeTextColor={changeTextColor}
+              />
+            )}
+            <LabelsTable>
+              <TableHeader>
+                <LabelCounter>{data?.labels?.length}개의 레이블</LabelCounter>
+              </TableHeader>
+              {data?.labels?.map((label) => (
+                <LabelList
+                  key={label.id}
+                  id={label.id}
+                  title={label.title}
+                  backgroundColor={label.backgroundColor}
+                  textColor={label.textColor}
+                  description={label.description}
+                />
+              ))}
+              {data?.labels?.length === 0 && (
+                <EmptyList>
+                  <EmptyContent>생성된 레이블이 없습니다.</EmptyContent>
+                </EmptyList>
+              )}
+            </LabelsTable>
+          </Container>
+        )}
+      </Main>
+    </>
   );
 }
 
 const Main = styled.div`
+  width: 1280px;
+  height: 100%;
+`;
+
+const Container = styled.div`
+  width: 100%;
   padding: 32px 0px;
   display: flex;
   gap: 24px;
   flex-direction: column;
-  width: 1280px;
 `;
 
 const Tap = styled.div`
@@ -271,15 +299,10 @@ const EmptyContent = styled.span`
   color: ${({ theme }) => theme.colorSystem.neutral.text.weak};
 `;
 
-const Dim = styled.div`
-  position: absolute;
-  top: 0px;
-  left: 0px;
+const LoadingPage = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100%;
-  z-index: 1000;
-  background-color: rgba(16, 20, 26, 0.4);
+  height: 700px;
 `;
